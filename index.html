@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bn" class="bg-gray-900 text-white">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,794 +11,967 @@
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
   <style>
-    body { font-family: 'Balsamiq Sans', sans-serif; background: #111827; }
-    .market-card { background: #181f2d; border: 1px solid #222; border-radius: 16px; padding: 16px; margin-bottom: 18px; box-shadow: 0 4px 18px #0002;}
-    .market-name { font-weight:800; font-size:1.15rem;}
-    .market-price { font-weight:700; font-size:1.15rem; }
-    .small-muted { color:#9ca3af; font-size:0.96rem; }
+    body { font-family: 'Balsamiq Sans', sans-serif; }
+    @font-face {
+      font-family: 'Balsamiq Sans';
+      src: url('fonts/BalsamiqSans-Regular.ttf') format('truetype');
+    }
+    .market-card { background: #111827; border: 1px solid #222; border-radius: 12px; padding: 12px; margin-bottom: 12px; display:flex; align-items:center; gap:12px; }
+    .market-name { font-weight:800; font-size:1.05rem; }
+    .market-price { font-weight:700; font-size:1.05rem; }
+    .small-muted { color:#9ca3af; font-size:0.9rem; }
     .positive { color:#4ade80; font-weight:800; }
     .negative { color:#ef4444; font-weight:800; }
-    .flex-col-scroll { display:flex; flex-direction:column; gap:10px; max-height:58vh; overflow:auto; padding-right:9px; }
-    .portfolio-item { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:12px; background:#222c3a; border-radius:12px; border:1px solid #222;}
-    .btn-small { padding:9px 14px; border-radius:8px; background:#2563eb; color:white; font-weight:700; border:none; cursor:pointer;}
-    .btn-small:hover { background:#1e40af;}
+    .flex-col-scroll { display:flex; flex-direction:column; gap:8px; max-height:60vh; overflow:auto; padding-right:6px; }
+    .portfolio-item { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px; background:#0f1724; border-radius:10px; border:1px solid #222; }
+    .btn-small { padding:8px 12px; border-radius:8px; background:#2563eb; color:white; font-weight:700; border:none; cursor:pointer; }
     .btn-danger { background:#ef4444; color:white; }
-    .pill { padding:7px 12px; border-radius:999px; background:#19223b; border:1px solid #333; font-weight:700; }
+    .pill { padding:6px 10px; border-radius:999px; background:#111827; border:1px solid #333; font-weight:700; }
     .muted { color:#9ca3af; }
-    .hint { color:#94a3b8; font-size:0.99rem; }
-    #universal-modal { position:fixed; inset:0; background:rgba(0,0,0,0.81); z-index:99999; display:none; align-items:center; justify-content:center; }
-    #universal-modal-content { background:#212b3a; color:white; border-radius:20px; padding:2.1rem; max-width:420px; width:96%; text-align:center;}
-    .bottom-nav { border-top: 1px solid #232d3e; display: flex; justify-content: space-around; background: #182034; }
-    .bottom-nav button { flex-grow: 1; padding: 1.1rem 0; font-size: 1.15rem; color: #bbb; background: none; border: none; cursor: pointer;}
-    .bottom-nav button.active, .bottom-nav button:hover { background: #222a3e; color: white; }
+    .hint { color:#94a3b8; font-size:0.95rem; }
+    .bank-dashboard { background:#181827; border-radius:12px; padding:18px; margin-bottom:16px; border:2px solid #4ade80; }
+    .bank-loan-row { display:flex; align-items:center; gap:14px; justify-content:space-between; background:#222; border-radius:10px; margin-bottom:8px; padding:10px; }
+    .bank-loan-row .loan-details { flex:1; }
+    .bank-loan-row .loan-actions { flex-shrink:0; }
+    #universal-modal { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:99999; display:none; align-items:center; justify-content:center; }
+    #universal-modal-content { background:#181818; color:white; border-radius:18px; padding:2rem; max-width:500px; width:96%; text-align:center; }
+    .bottom-nav { border-top: 1px solid #555; display: flex; justify-content: space-around; background: #121212; }
+    .bottom-nav button { flex-grow: 1; padding: 1rem 0; font-size: 1.1rem; color: #bbb; background: none; border: none; cursor: pointer; transition: background 0.3s;}
+    .bottom-nav button.active, .bottom-nav button:hover { background: #222; color: white; }
+    .mode-btn { transition: background 0.3s, color 0.3s; }
     .mode-btn.active { background: #4ade80; color: black;}
-    .pl-perc { font-weight:700; font-size:1.04rem; }
-    .pl-perc.positive { color:#22c55e; }
-    .pl-perc.negative { color:#ef4444; }
-    .signout-btn {margin:16px 0 0 0; padding:11px 32px; border-radius:12px; background:#ef4444; color:white; font-weight:800; border:none; cursor:pointer; font-size:1.14rem;}
-    .signout-btn:hover {background:#dc2626;}
+    .notification-item { background: #222; padding: 10px 15px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
+    .notification-text { font-weight: 600;}
+    #settings-panel { display:none; position:fixed; right:12px; top:80px; width:320px; z-index:1400; }
+    #scoreboard-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:2000; align-items:center; justify-content:center; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
-<div id="universal-modal"><div id="universal-modal-content"></div></div>
-<div id="auth-screen" style="position:fixed; inset:0; background:#181818; z-index:100000; display:flex; align-items:center; justify-content:center;">
-  <div style="padding:2.2rem; border-radius:22px; background:#222e3c; color:white; text-align:center;">
-    <h2 style="font-size:2.2rem;">Sign in</h2>
-    <button onclick="googleSignIn()" class="btn-small" style="font-size:1.17rem;">Google Sign-In</button>
+  <div id="universal-modal"><div id="universal-modal-content"></div></div>
+  <div id="auth-screen" style="position:fixed; inset:0; background:#181818; z-index:100000; display:flex; align-items:center; justify-content:center;">
+    <div style="padding:2rem; border-radius:18px; background:#222; color:white; text-align:center;">
+      <h2 style="font-size:2rem;">Sign in</h2>
+      <button onclick="googleSignIn()" class="btn-small" style="font-size:1.2rem;">Google Sign-In</button>
+    </div>
   </div>
-</div>
-<div id="app" class="flex-grow flex flex-col" style="display:none;">
-  <header class="flex justify-between items-center p-4 border-b border-gray-700 relative">
-    <div>
-      <span id="display-username" class="font-bold text-xl">Player</span>
-      <span class="text-sm muted ml-3">| Online</span>
-    </div>
-    <div class="flex items-center gap-4">
-      <div class="text-right">
-        <div class="text-sm muted">Balance</div>
-        <div id="balance" class="text-2xl font-extrabold">৳ 0</div>
+  <div id="app" class="flex-grow flex flex-col" style="display:none;">
+    <header class="flex justify-between items-center p-4 border-b border-gray-700 relative">
+      <div>
+        <span id="display-username" class="font-bold text-xl">Player</span>
+        <span class="text-sm muted ml-3">| Online</span>
       </div>
-    </div>
-  </header>
-  <main class="flex-grow overflow-auto p-4">
-    <div class="mb-4 flex gap-3 justify-center">
-      <button id="nav-home" onclick="showScreen('home')" class="mode-btn active px-4 py-2 rounded bg-gray-800 border border-gray-700">Home</button>
-      <button id="nav-stocks" onclick="showScreen('stocks')" class="mode-btn px-4 py-2 rounded border border-gray-700">Stocks</button>
-      <button id="nav-crypto" onclick="showScreen('crypto')" class="mode-btn px-4 py-2 rounded border border-gray-700">Crypto</button>
-      <button id="nav-portfolio" onclick="showScreen('portfolio')" class="mode-btn px-4 py-2 rounded border border-gray-700">Portfolio</button>
-    </div>
-    <section id="screen-home">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold mb-4">Home</h2>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <div class="text-sm muted">Balance</div>
+          <div id="balance" class="text-2xl font-extrabold">৳ 0</div>
+        </div>
+      </div>
+    </header>
+    <main class="flex-grow overflow-auto p-4">
+      <div class="mb-4 flex gap-3 justify-center">
+        <button id="nav-home" onclick="showScreen('home')" class="mode-btn active px-4 py-2 rounded bg-gray-800 border border-gray-700">Home</button>
+        <button id="nav-stocks" onclick="showScreen('stocks')" class="mode-btn px-4 py-2 rounded border border-gray-700">Stocks</button>
+        <button id="nav-crypto" onclick="showScreen('crypto')" class="mode-btn px-4 py-2 rounded border border-gray-700">Crypto</button>
+        <button id="nav-portfolio" onclick="showScreen('portfolio')" class="mode-btn px-4 py-2 rounded border border-gray-700">Portfolio</button>
+      </div>
+      <section id="screen-home">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl font-bold mb-4">Home</h2>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+              <div class="market-card">
+                <div>
+                  <div class="small-muted">Total Net Worth</div>
+                  <div id="networth" class="text-2xl font-extrabold">৳ 0</div>
+                  <div class="hint">Net Worth = Balance + Market value of holdings</div>
+                </div>
+              </div>
+              <div class="mt-4">
+                <h3 class="text-xl font-bold mb-2">Recent Activities</h3>
+                <div id="activity-list" class="flex-col-scroll"></div>
+              </div>
+            </div>
+            <aside>
+              <div class="market-card">
+                <div style="width:100%">
+                  <div class="small-muted">Quick Actions</div>
+                  <div class="mt-3 flex flex-col gap-2">
+                    <button class="btn-small" onclick="showScreen('stocks')">Open Stocks Market</button>
+                    <button class="btn-small" onclick="showScreen('crypto')">Open Crypto Market</button>
+                    <button class="btn-small" onclick="showScreen('portfolio')">View Portfolio</button>
+                  </div>
+                </div>
+              </div>
+              <div class="market-card mt-3">
+                <div>
+                  <div class="small-muted">Total P/L</div>
+                  <div id="total-pl" class="text-xl font-bold">৳ 0</div>
+                  <div class="hint mt-2">Positive values shown in green; negative in red.</div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+      <section id="screen-stocks" class="hidden max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-3xl font-bold">Stock Market</h2>
+          <div class="text-sm muted">Last update: <span id="stocks-last-update">—</span></div>
+        </div>
         <div class="grid md:grid-cols-3 gap-4">
+          <div class="md:col-span-1">
+            <h3 class="text-lg font-bold mb-2">Companies</h3>
+            <div id="companies-list" class="flex-col-scroll"></div>
+            <div class="mt-3 small-muted">Tip: Click a company to view details and buy.</div>
+          </div>
           <div class="md:col-span-2">
             <div class="market-card">
-              <div>
-                <div class="small-muted">Total Net Worth</div>
-                <div id="networth" class="text-2xl font-extrabold">৳ 0</div>
-                <div class="hint">Net Worth = Balance + Market value of holdings</div>
+              <div style="width:100%">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <div id="market-selected-name" class="market-name text-2xl">Select a company</div>
+                    <div id="market-selected-symbol" class="small-muted">—</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="small-muted">Current Price</div>
+                    <div id="market-selected-price" class="market-price text-2xl">৳ —</div>
+                    <div id="market-selected-change" class="small-muted">—</div>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <canvas id="market-chart" height="180"></canvas>
+                </div>
+                <div class="mt-4 flex gap-3 items-center">
+                  <div>
+                    <label class="small-muted block mb-1">Quantity</label>
+                    <input id="buy-qty" type="number" min="1" value="1" class="px-3 py-2 rounded bg-gray-900 border border-gray-700 w-32" />
+                  </div>
+                  <div>
+                    <button id="buy-btn" class="btn-small" onclick="buySelected()">Buy</button>
+                  </div>
+                  <div class="ml-auto text-right small-muted">
+                    <div>Cash: <span id="header-balance">৳ 0</span></div>
+                    <div id="est-cost" class="hint">Est. cost: ৳ 0</div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="mt-4">
-              <h3 class="text-xl font-bold mb-2">Recent Activities</h3>
-              <div id="activity-list" class="flex-col-scroll"></div>
-            </div>
           </div>
-          <aside>
+        </div>
+      </section>
+      <section id="screen-crypto" class="hidden max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-3xl font-bold">Crypto Market</h2>
+          <div class="text-sm muted">Last update: <span id="crypto-last-update">—</span></div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="md:col-span-1">
+            <h3 class="text-lg font-bold mb-2">Coins</h3>
+            <div id="coins-list" class="flex-col-scroll"></div>
+            <div class="mt-3 small-muted">Tip: Crypto behaves similarly to stocks here.</div>
+          </div>
+          <div class="md:col-span-2">
             <div class="market-card">
               <div style="width:100%">
-                <div class="small-muted">Quick Actions</div>
-                <div class="mt-3 flex flex-col gap-2">
-                  <button class="btn-small" onclick="showScreen('stocks')">Open Stocks Market</button>
-                  <button class="btn-small" onclick="showScreen('crypto')">Open Crypto Market</button>
-                  <button class="btn-small" onclick="showScreen('portfolio')">View Portfolio</button>
+                <div class="flex justify-between items-start">
+                  <div>
+                    <div id="coin-selected-name" class="market-name text-2xl">Select a coin</div>
+                    <div id="coin-selected-symbol" class="small-muted">—</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="small-muted">Current Price</div>
+                    <div id="coin-selected-price" class="market-price text-2xl">৳ —</div>
+                    <div id="coin-selected-change" class="small-muted">—</div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div class="market-card mt-3">
-              <div>
-                <div class="small-muted">Total P/L</div>
-                <div id="total-pl" class="text-xl font-bold">৳ 0</div>
-                <div class="hint mt-2">Positive values shown in green; negative in red.</div>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </div>
-    </section>
-    <section id="screen-stocks" class="hidden max-w-4xl mx-auto">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-3xl font-bold">Stock Market</h2>
-        <div class="text-sm muted">Last update: <span id="stocks-last-update">—</span></div>
-      </div>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="md:col-span-1">
-          <h3 class="text-lg font-bold mb-2">Companies</h3>
-          <div id="companies-list" class="flex-col-scroll"></div>
-          <div class="mt-3 small-muted">Tip: Click a company to view details and buy.</div>
-        </div>
-        <div class="md:col-span-2">
-          <div class="market-card">
-            <div style="width:100%">
-              <div class="flex justify-between items-start">
-                <div>
-                  <div id="market-selected-name" class="market-name text-2xl">Select a company</div>
-                  <div id="market-selected-symbol" class="small-muted">—</div>
+                <div class="mt-4">
+                  <canvas id="coin-chart" height="180"></canvas>
                 </div>
-                <div class="text-right">
-                  <div class="small-muted">Current Price</div>
-                  <div id="market-selected-price" class="market-price text-2xl">৳ —</div>
-                  <div id="market-selected-change" class="small-muted">—</div>
-                </div>
-              </div>
-              <div class="mt-4">
-                <canvas id="market-chart" height="180"></canvas>
-              </div>
-              <div class="mt-4 flex gap-3 items-center">
-                <div>
-                  <label class="small-muted block mb-1">Quantity</label>
-                  <input id="buy-qty" type="number" min="1" value="1" class="px-3 py-2 rounded bg-gray-900 border border-gray-700 w-32" />
-                </div>
-                <div>
-                  <button id="buy-btn" class="btn-small" onclick="buySelected()">Buy</button>
-                </div>
-                <div class="ml-auto text-right small-muted">
-                  <div>Cash: <span id="header-balance">৳ 0</span></div>
-                  <div id="est-cost" class="hint">Est. cost: ৳ 0</div>
+                <div class="mt-4 flex gap-3 items-center">
+                  <div>
+                    <label class="small-muted block mb-1">Quantity</label>
+                    <input id="buy-qty-coin" type="number" min="1" value="1" class="px-3 py-2 rounded bg-gray-900 border border-gray-700 w-32" />
+                  </div>
+                  <div>
+                    <button id="buy-coin-btn" class="btn-small" onclick="buySelectedCoin()">Buy</button>
+                  </div>
+                  <div class="ml-auto text-right small-muted">
+                    <div>Cash: <span id="header-balance-coin">৳ 0</span></div>
+                    <div id="est-cost-coin" class="hint">Est. cost: ৳ 0</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-    <section id="screen-crypto" class="hidden max-w-4xl mx-auto">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-3xl font-bold">Crypto Market</h2>
-        <div class="text-sm muted">Last update: <span id="crypto-last-update">—</span></div>
-      </div>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="md:col-span-1">
-          <h3 class="text-lg font-bold mb-2">Coins</h3>
-          <div id="coins-list" class="flex-col-scroll"></div>
-          <div class="mt-3 small-muted">Tip: Crypto behaves similarly to stocks here.</div>
+      </section>
+      <section id="screen-portfolio" class="hidden max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold mb-4">Portfolio</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <h3 class="text-xl font-bold mb-2">Holdings</h3>
+            <button class="btn-small" onclick="openBankModal()">Bank</button>
+            <button class="btn-small" onclick="openCompanyModal()">Create Company</button>
+            <div id="portfolio-list" class="flex-col-scroll"></div>
+            <div id="bank-admin-dashboard" style="margin-top:18px;"></div>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold mb-2">Transactions</h3>
+            <div id="transactions-list" class="flex-col-scroll"></div>
+          </div>
         </div>
-        <div class="md:col-span-2">
-          <div class="market-card">
-            <div style="width:100%">
-              <div class="flex justify-between items-start">
-                <div>
-                  <div id="coin-selected-name" class="market-name text-2xl">Select a coin</div>
-                  <div id="coin-selected-symbol" class="small-muted">—</div>
-                </div>
-                <div class="text-right">
-                  <div class="small-muted">Current Price</div>
-                  <div id="coin-selected-price" class="market-price text-2xl">৳ —</div>
-                  <div id="coin-selected-change" class="small-muted">—</div>
-                </div>
-              </div>
-              <div class="mt-4">
-                <canvas id="coin-chart" height="180"></canvas>
-              </div>
-              <div class="mt-4 flex gap-3 items-center">
-                <div>
-                  <label class="small-muted block mb-1">Quantity</label>
-                  <input id="buy-qty-coin" type="number" min="1" value="1" class="px-3 py-2 rounded bg-gray-900 border border-gray-700 w-32" />
-                </div>
-                <div>
-                  <button id="buy-coin-btn" class="btn-small" onclick="buySelectedCoin()">Buy</button>
-                </div>
-                <div class="ml-auto text-right small-muted">
-                  <div>Cash: <span id="header-balance-coin">৳ 0</span></div>
-                  <div id="est-cost-coin" class="hint">Est. cost: ৳ 0</div>
-                </div>
-              </div>
+      </section>
+      <div id="settings-panel">
+        <div class="bg-gray-900 border border-gray-700 rounded-lg p-4">
+          <div class="flex justify-between items-center mb-3">
+            <div class="text-lg font-bold">Settings</div>
+            <button onclick="closeSettings()" class="px-2 py-1 rounded border">✖</button>
+          </div>
+          <div class="mb-3">
+            <label class="small-muted">Simulation Speed</label>
+            <div class="flex items-center gap-2 mt-2">
+              <select id="setting-speed" class="px-3 py-2 rounded bg-gray-900 border border-gray-700 w-full">
+                <option value="60000">Real (1 min)</option>
+                <option value="15000">Fast (15s) — Demo</option>
+                <option value="5000">Faster (5s) — Dev</option>
+              </select>
             </div>
+            <div class="hint mt-1">How often prices update.</div>
           </div>
         </div>
       </div>
-    </section>
-    <section id="screen-portfolio" class="hidden max-w-4xl mx-auto">
-      <h2 class="text-3xl font-bold mb-4">Portfolio</h2>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div>
-          <h3 class="text-xl font-bold mb-2">Holdings</h3>
-          <button class="btn-small" onclick="openBankModal()">Bank</button>
-          <button class="btn-small" onclick="openCompanyModal()">Create Company</button>
-          <div id="portfolio-list" class="flex-col-scroll"></div>
-          <button class="signout-btn" onclick="signOut()">Sign Out</button>
-        </div>
-        <div>
-          <h3 class="text-xl font-bold mb-2">Transactions</h3>
-          <div id="transactions-list" class="flex-col-scroll"></div>
-        </div>
-      </div>
-    </section>
-    <div id="settings-panel">
-      <div class="bg-gray-900 border border-gray-700 rounded-lg p-4">
-        <div class="flex justify-between items-center mb-3">
-          <div class="text-lg font-bold">Settings</div>
-          <button onclick="closeSettings()" class="px-2 py-1 rounded border">✖</button>
-        </div>
-        <div class="mb-3">
-          <label class="small-muted">Simulation Speed</label>
-          <div class="flex items-center gap-2 mt-2">
-            <select id="setting-speed" class="px-3 py-2 rounded bg-gray-900 border border-gray-700 w-full">
-              <option value="60000">Real (1 min)</option>
-              <option value="15000">Fast (15s) — Demo</option>
-              <option value="5000">Faster (5s) — Dev</option>
-            </select>
-          </div>
-          <div class="hint mt-1">How often prices update.</div>
-        </div>
-      </div>
-    </div>
-  </main>
-  <nav class="bottom-nav">
-    <button onclick="showScreen('home')" class="active">🏠<br><small>Home</small></button>
-    <button onclick="showScreen('stocks')">📈<br><small>Stocks</small></button>
-    <button onclick="showScreen('crypto')">₿<br><small>Crypto</small></button>
-    <button onclick="showScreen('portfolio')">💼<br><small>Portfolio</small></button>
-  </nav>
-</div>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyD8z3e5j9y48wJkyU89F7M19cDfxQ4P8uo",
-  authDomain: "chess-online-ebc1f.firebaseapp.com",
-  databaseURL: "https://chess-online-ebc1f-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "chess-online-ebc1f",
-  storageBucket: "chess-online-ebc1f.appspot.com",
-  messagingSenderId: "825068912703",
-  appId: "1:825068912703:web:48330509c612b8b4cdf88a"
-};
-firebase.initializeApp(firebaseConfig);
+    </main>
+    <nav class="bottom-nav">
+      <button onclick="showScreen('home')" class="active">🏠<br><small>Home</small></button>
+      <button onclick="showScreen('stocks')">📈<br><small>Stocks</small></button>
+      <button onclick="showScreen('crypto')">₿<br><small>Crypto</small></button>
+      <button onclick="showScreen('portfolio')">💼<br><small>Portfolio</small></button>
+    </nav>
+  </div>
+  <script>
+    // Firebase config: আপনারটি বসিয়ে নিন
+    const firebaseConfig = {
+      apiKey: "AIzaSyD8z3e5j9y48wJkyU89F7M19cDfxQ4P8uo",
+      authDomain: "chess-online-ebc1f.firebaseapp.com",
+      databaseURL: "https://chess-online-ebc1f-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "chess-online-ebc1f",
+      storageBucket: "chess-online-ebc1f.appspot.com",
+      messagingSenderId: "825068912703",
+      appId: "1:825068912703:web:48330509c612b8b4cdf88a"
+    };
+    firebase.initializeApp(firebaseConfig);
 
-// --- Utility ---
-function formatMoney(n) {
-  n = Number(n || 0);
-  if (n >= 1e9) return '৳ ' + (n/1e9).toFixed(2) + 'B';
-  if (n >= 1e6) return '৳ ' + (n/1e6).toFixed(2) + 'M';
-  if (n >= 1e3) return '৳ ' + (n/1e3).toFixed(2) + 'K';
-  return '৳ ' + n.toLocaleString(undefined, {maximumFractionDigits:2});
-}
-function nowISO() { return (new Date()).toLocaleString(); }
-function roundTo(n, digits) {const m = Math.pow(10, digits||2); return Math.round(n*m)/m;}
-function randNormal() { let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v);}
+    function showModal(content, onClose) {
+      const modal = document.getElementById('universal-modal');
+      const modalContent = document.getElementById('universal-modal-content');
+      modalContent.innerHTML = content;
+      modal.style.display = 'flex';
+      modal.onclick = (e) => { if (e.target === modal) { modal.style.display = 'none'; if(onClose) onClose(); } };
+    }
+    function hideModal() {document.getElementById('universal-modal').style.display='none';}
 
-// --- Modal ---
-function showModal(content, onClose) {
-  const modal = document.getElementById('universal-modal');
-  const modalContent = document.getElementById('universal-modal-content');
-  modalContent.innerHTML = content;
-  modal.style.display = 'flex';
-  modal.onclick = (e) => { if (e.target === modal) { modal.style.display = 'none'; if(onClose) onClose(); } };
-}
-function hideModal() {document.getElementById('universal-modal').style.display='none';}
+    function formatMoney(n) {
+      n = Number(n || 0);
+      if (n >= 1e9) return '৳ ' + (n/1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return '৳ ' + (n/1e6).toFixed(2) + 'M';
+      if (n >= 1e3) return '৳ ' + (n/1e3).toFixed(2) + 'K';
+      return '৳ ' + n.toLocaleString(undefined, {maximumFractionDigits:2});
+    }
 
-// --- Auth/User ---
-let user = null, isAdmin = false, bankBalance = 10000000000;
-let state = {
-  balance: 100000,
-  holdings: {},
-  transactions: [],
-  activities: [],
-  markets: { stocks: {}, coins: {} },
-  settings: { updateInterval: 60000 },
-  username: "",
-  userCompany: null,
-  loan: null
-};
-function signOut() { firebase.auth().signOut().then(()=>{ location.reload(); }); }
-function syncUserState() { if(user) firebase.database().ref('users/'+user.uid).set(state); }
-function loadUserState() { firebase.database().ref('users/'+user.uid).on('value', snap=>{ if(snap.exists()) { state = {...state, ...snap.val()}; refreshUIAll(); } }); }
-function pushActivity(text, important=false) {
-  const entry = {time: nowISO(),user: state.username,text,important};
-  firebase.database().ref('activities').push(entry);
-}
+    let user = null, isAdmin = false;
+    let state = {
+      balance: 100000,
+      holdings: {},
+      transactions: [],
+      activities: [],
+      markets: { stocks: {}, coins: {} },
+      settings: { updateInterval: 60000 },
+      username: "",
+      userCompany: null,
+      loan: null
+    };
 
-function googleSignIn() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider).then(result=>{
-    user = result.user;
-    isAdmin = (user.email === '1234@gmail.com');
-    state.username = user.displayName;
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = '';
-    document.getElementById('display-username').innerText = state.username;
-    firebase.database().ref('users/'+user.uid).once('value').then(snap=>{
-      if(!snap.exists()) {
-        state.balance = 100000;
-        state.holdings = {};
-        state.transactions = [];
-        state.activities = [];
-        state.userCompany = null;
-        state.loan = null;
-        syncUserState();
+    // ---- Firebase realtime sync ----
+    function syncUserState() {
+      if (user) firebase.database().ref('users/'+user.uid).set(state);
+    }
+    function loadUserState() {
+      firebase.database().ref('users/'+user.uid).on('value', snap=>{
+        if(snap.exists()) { state = {...state, ...snap.val()}; refreshUIAll(); }
+      });
+    }
+    function pushActivity(text) {
+      const entry = {time: nowISO(), user: state.username, text};
+      firebase.database().ref('activities').push(entry);
+    }
+
+    // ---- Auth ----
+    function googleSignIn() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider).then(result=>{
+        user = result.user;
+        isAdmin = (user.email === '1234@gmail.com');
+        state.username = user.displayName;
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('app').style.display = '';
+        document.getElementById('display-username').innerText = state.username;
+        firebase.database().ref('users/'+user.uid).once('value').then(snap=>{
+          if(!snap.exists()) {
+            state.balance = 100000;
+            state.holdings = {};
+            state.transactions = [];
+            state.activities = [];
+            state.userCompany = null;
+            state.loan = null;
+            syncUserState();
+          }
+          loadUserState();
+        });
+        loadMarkets();
+        loadCompanies();
+        loadActivities();
+        loadLoansForBank();
+        startMarketSimulation();
+      });
+    }
+
+    // ---- Market ----
+    const FAKE_COMPANIES = [
+      {symbol:'TNVA', name:'TechNova Ltd', base: 120.00},
+      {symbol:'SKYO', name:'SkyOil Ltd', base: 86.50},
+      {symbol:'GRMT', name:'GreenMart', base: 45.00},
+      {symbol:'MEDX', name:'MediX Pharmaceuticals', base: 62.25},
+      {symbol:'ROBO', name:'RoboWorks Inc', base: 210.00},
+      {symbol:'FOOD', name:'Foodies PLC', base: 31.10},
+      {symbol:'ECOA', name:'EcoAutos', base: 155.00},
+      {symbol:'EDUT', name:'EduTech Global', base: 27.75}
+    ];
+    const FAKE_COINS = [
+      {symbol:'BTCR', name:'BitCore', base: 32000.00},
+      {symbol:'LTDG', name:'LiteDoge', base: 0.35},
+      {symbol:'ETHX', name:'EtherX', base: 1800.00},
+      {symbol:'SOLR', name:'Solara', base: 45.50},
+      {symbol:'MINT', name:'MintCoin', base: 0.12}
+    ];
+
+    function loadMarkets() {
+      firebase.database().ref('markets/stocks').once('value', snap=>{
+        if(!snap.exists()) {
+          let stocks = {};
+          FAKE_COMPANIES.forEach(c=>{
+            stocks[c.symbol] = {symbol:c.symbol, name:c.name, current:c.base, history:[{t:Date.now(),price:c.base}]};
+          });
+          firebase.database().ref('markets/stocks').set(stocks);
+        }
+      });
+      firebase.database().ref('markets/coins').once('value', snap=>{
+        if(!snap.exists()) {
+          let coins = {};
+          FAKE_COINS.forEach(c=>{
+            coins[c.symbol] = {symbol:c.symbol, name:c.name, current:c.base, history:[{t:Date.now(),price:c.base}]};
+          });
+          firebase.database().ref('markets/coins').set(coins);
+        }
+      });
+      firebase.database().ref('markets').on('value', snap=>{
+        if(snap.exists()) {
+          state.markets.stocks = snap.val().stocks || {};
+          state.markets.coins = snap.val().coins || {};
+          refreshUIAll();
+        }
+      });
+    }
+
+    function loadCompanies() {
+      firebase.database().ref('companies').on('value', snap=>{
+        if(snap.exists()) {
+          const companies = snap.val();
+          Object.values(companies).forEach(c=>{
+            state.markets.stocks[c.symbol] = {
+              symbol: c.symbol,
+              name: c.name,
+              current: c.price,
+              history: c.history || [{t:Date.now(),price:c.price}]
+            };
+          });
+          refreshUIAll();
+        }
+      });
+    }
+
+    // ---- Activities ----
+    function loadActivities() {
+      firebase.database().ref('activities').on('value', snap=>{
+        if(snap.exists()) {
+          let acts = [];
+          snap.forEach(child=>{ acts.unshift(child.val()); });
+          state.activities = acts;
+          refreshUIAll();
+        }
+      });
+    }
+
+    // ---- Price simulation ----
+    let marketInterval = null;
+    function startMarketSimulation() {
+      stopMarketSimulation();
+      const interval = Number(state.settings.updateInterval || 60000);
+      marketInterval = setInterval(() => { stepMarkets(); }, interval);
+      stepMarkets();
+      updateLastUpdateLabels();
+    }
+    function stopMarketSimulation() { if (marketInterval) clearInterval(marketInterval);}
+    function stepMarkets() {
+      const now = Date.now();
+      Object.values(state.markets.stocks).forEach(m => {
+        const last = m.history[m.history.length-1].price;
+        const vol = 0.015, changeFactor = 1 + (randNormal()*vol);
+        let next = +(last * changeFactor); if (next <= 0.00001) next = last * 0.99;
+        next = roundTo(next, 4);
+        m.history.push({t: now, price: next});
+        m.current = next;
+        if (m.history.length > 200) m.history.shift();
+        firebase.database().ref('markets/stocks/'+m.symbol).set(m);
+      });
+      Object.values(state.markets.coins).forEach(m => {
+        const last = m.history[m.history.length-1].price;
+        const vol = 0.045, changeFactor = 1 + (randNormal()*vol);
+        let next = +(last * changeFactor); if (next <= 0.0000001) next = last * 0.98;
+        next = roundTo(next, 8);
+        m.history.push({t: now, price: next});
+        m.current = next;
+        if (m.history.length > 200) m.history.shift();
+        firebase.database().ref('markets/coins/'+m.symbol).set(m);
+      });
+      updateLastUpdateLabels();
+    }
+    function randNormal() { let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v);}
+    function roundTo(n, digits) {const m = Math.pow(10, digits||2); return Math.round(n*m)/m;}
+    function nowISO() { return (new Date()).toLocaleString(); }
+    function updateLastUpdateLabels() {
+      const t = new Date().toLocaleTimeString();
+      document.getElementById('stocks-last-update').innerText = t;
+      document.getElementById('crypto-last-update').innerText = t;
+    }
+
+    // ---- UI ----
+    function showScreen(name) {
+      const screens = ['home','stocks','crypto','portfolio'];
+      screens.forEach(s => {document.getElementById('screen-'+s).classList.toggle('hidden',s!==name);});
+      document.querySelectorAll('.bottom-nav button').forEach(btn=>btn.classList.remove('active'));
+      document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+      if(name==='home'){document.getElementById('nav-home').classList.add('active');}
+      if(name==='stocks'){document.getElementById('nav-stocks').classList.add('active');}
+      if(name==='crypto'){document.getElementById('nav-crypto').classList.add('active');}
+      if(name==='portfolio'){document.getElementById('nav-portfolio').classList.add('active');}
+    }
+    function openSettings(){document.getElementById('settings-panel').style.display='block';}
+    function closeSettings(){document.getElementById('settings-panel').style.display='none';}
+
+    // ---- Market UI ----
+    let selectedStockSymbol = null, marketChart = null;
+    let selectedCoinSymbol = null, coinChart = null;
+    function buildCompaniesList() {
+      const container = document.getElementById('companies-list');
+      container.innerHTML = '';
+      Object.values(state.markets.stocks).forEach(m => {
+        const el = document.createElement('div');
+        el.className = 'market-card';
+        el.innerHTML = `<div style="flex:1"><div class="market-name">${m.name}</div><div class="small-muted">${m.symbol}</div></div>
+        <div class="text-right"><div class="market-price">${formatMoney(m.current)}</div>
+        <div class="small-muted">${calcChangeText(m)}</div></div>`;
+        el.style.cursor = 'pointer';
+        el.onclick = () => selectStock(m.symbol);
+        container.appendChild(el);
+      });
+    }
+    function buildCoinsList() {
+      const container = document.getElementById('coins-list');
+      container.innerHTML = '';
+      Object.values(state.markets.coins).forEach(m => {
+        const el = document.createElement('div');
+        el.className = 'market-card';
+        el.innerHTML = `<div style="flex:1"><div class="market-name">${m.name}</div><div class="small-muted">${m.symbol}</div></div>
+        <div class="text-right"><div class="market-price">${formatMoney(m.current)}</div>
+        <div class="small-muted">${calcChangeText(m)}</div></div>`;
+        el.style.cursor = 'pointer';
+        el.onclick = () => selectCoin(m.symbol);
+        container.appendChild(el);
+      });
+    }
+    function calcChangeText(m) {
+      const hist = m.history; if(hist.length<2) return '—';
+      const prev = hist[hist.length-2].price, cur = m.current;
+      const diff = +(cur-prev), pct = +((diff/prev)*100).toFixed(2);
+      const sign = diff>=0?'+':'';
+      return `${sign}${pct}% (${formatMoney(diff)})`;
+    }
+    function selectStock(symbol) {
+      selectedStockSymbol = symbol;
+      const m = state.markets.stocks[symbol];
+      document.getElementById('market-selected-name').innerText = m.name;
+      document.getElementById('market-selected-symbol').innerText = m.symbol;
+      document.getElementById('market-selected-price').innerText = formatMoney(m.current);
+      document.getElementById('market-selected-change').innerText = calcChangeText(m);
+      document.getElementById('header-balance').innerText = formatMoney(state.balance);
+      document.getElementById('buy-qty').oninput = updateEstCost;
+      updateEstCost();
+      renderMarketChart(m, 'market-chart');
+    }
+    function selectCoin(symbol) {
+      selectedCoinSymbol = symbol;
+      const m = state.markets.coins[symbol];
+      document.getElementById('coin-selected-name').innerText = m.name;
+      document.getElementById('coin-selected-symbol').innerText = m.symbol;
+      document.getElementById('coin-selected-price').innerText = formatMoney(m.current);
+      document.getElementById('coin-selected-change').innerText = calcChangeText(m);
+      document.getElementById('header-balance-coin').innerText = formatMoney(state.balance);
+      document.getElementById('buy-qty-coin').oninput = updateEstCostCoin;
+      updateEstCostCoin();
+      renderMarketChart(m, 'coin-chart');
+    }
+    function updateEstCost() {
+      const qty = Number(document.getElementById('buy-qty').value||0);
+      if(!selectedStockSymbol){document.getElementById('est-cost').innerText='Est. cost: ৳ 0';return;}
+      const price = state.markets.stocks[selectedStockSymbol].current;
+      document.getElementById('est-cost').innerText = 'Est. cost: '+formatMoney(qty*price);
+    }
+    function updateEstCostCoin() {
+      const qty = Number(document.getElementById('buy-qty-coin').value||0);
+      if(!selectedCoinSymbol){document.getElementById('est-cost-coin').innerText='Est. cost: ৳ 0';return;}
+      const price = state.markets.coins[selectedCoinSymbol].current;
+      document.getElementById('est-cost-coin').innerText = 'Est. cost: '+formatMoney(qty*price);
+    }
+    function renderMarketChart(market, canvasId) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      const labels = market.history.map(p=>(new Date(p.t)).toLocaleTimeString());
+      const data = market.history.map(p=>p.price);
+      const cfg = {
+        type:'line',
+        data:{labels,datasets:[{label:market.symbol,data,fill:true,tension:0.25,pointRadius:0}]},
+        options:{
+          animation:false,responsive:true,plugins:{legend:{display:false}},
+          scales:{x:{display:false},y:{ticks:{callback:function(val){return val;}}}}
+        }
+      };
+      if(canvasId==='market-chart'){if(marketChart){try{marketChart.destroy();}catch(e){}} marketChart=new Chart(ctx,cfg);}
+      else{if(coinChart){try{coinChart.destroy();}catch(e){}} coinChart=new Chart(ctx,cfg);}
+    }
+    function refreshChartsIfSelected() {
+      if(selectedStockSymbol&&marketChart){
+        const m = state.markets.stocks[selectedStockSymbol];
+        marketChart.data.labels = m.history.map(p=>(new Date(p.t)).toLocaleTimeString());
+        marketChart.data.datasets[0].data = m.history.map(p=>p.price);
+        marketChart.update();
+        document.getElementById('market-selected-price').innerText = formatMoney(m.current);
+        document.getElementById('market-selected-change').innerText = calcChangeText(m);
       }
-      loadUserState();
-    });
-    loadMarkets();
-    loadCompanies();
-    loadActivities();
-    startMarketSimulation();
-  });
-}
+      if(selectedCoinSymbol&&coinChart){
+        const m = state.markets.coins[selectedCoinSymbol];
+        coinChart.data.labels = m.history.map(p=>(new Date(p.t)).toLocaleTimeString());
+        coinChart.data.datasets[0].data = m.history.map(p=>p.price);
+        coinChart.update();
+        document.getElementById('coin-selected-price').innerText = formatMoney(m.current);
+        document.getElementById('coin-selected-change').innerText = calcChangeText(m);
+      }
+    }
 
-// --- Market ---
-const FAKE_COMPANIES = [
-  {symbol:'TNVA', name:'TechNova Ltd', base: 120.00},
-  {symbol:'SKYO', name:'SkyOil Ltd', base: 86.50},
-  {symbol:'GRMT', name:'GreenMart', base: 45.00},
-  {symbol:'MEDX', name:'MediX Pharmaceuticals', base: 62.25},
-  {symbol:'ROBO', name:'RoboWorks Inc', base: 210.00},
-  {symbol:'FOOD', name:'Foodies PLC', base: 31.10},
-  {symbol:'ECOA', name:'EcoAutos', base: 155.00},
-  {symbol:'EDUT', name:'EduTech Global', base: 27.75}
-];
-const FAKE_COINS = [
-  {symbol:'BTCR', name:'BitCore', base: 32000.00},
-  {symbol:'LTDG', name:'LiteDoge', base: 0.35},
-  {symbol:'ETHX', name:'EtherX', base: 1800.00},
-  {symbol:'SOLR', name:'Solara', base: 45.50},
-  {symbol:'MINT', name:'MintCoin', base: 0.12}
-];
-function loadMarkets() {
-  firebase.database().ref('markets/stocks').once('value', snap=>{
-    if(!snap.exists()) {
-      let stocks = {};
-      FAKE_COMPANIES.forEach(c=>{
-        stocks[c.symbol] = {symbol:c.symbol, name:c.name, current:c.base, history:[{t:Date.now(),price:c.base}], isUserCreated: false};
-      });
-      firebase.database().ref('markets/stocks').set(stocks);
-    }
-  });
-  firebase.database().ref('markets/coins').once('value', snap=>{
-    if(!snap.exists()) {
-      let coins = {};
-      FAKE_COINS.forEach(c=>{
-        coins[c.symbol] = {symbol:c.symbol, name:c.name, current:c.base, history:[{t:Date.now(),price:c.base}]};
-      });
-      firebase.database().ref('markets/coins').set(coins);
-    }
-  });
-  firebase.database().ref('markets').on('value', snap=>{
-    if(snap.exists()) {
-      state.markets.stocks = snap.val().stocks || {};
-      state.markets.coins = snap.val().coins || {};
+    // ---- Buy/Sell/Portfolio ----
+    function buySelected() {
+      if(!selectedStockSymbol){showModal('কোনো কোম্পানি সিলেক্ট করা হয়নি<br><button onclick="hideModal()">OK</button>');return;}
+      const qty = Math.floor(Number(document.getElementById('buy-qty').value||0));
+      if(qty<=0){showModal('সঠিক quantity দিন<br><button onclick="hideModal()">OK</button>');return;}
+      const m = state.markets.stocks[selectedStockSymbol];
+      const total = roundTo(qty*m.current,2);
+      if(total > state.balance){showModal('প্রচুর টাকা নেই<br><button onclick="hideModal()">OK</button>');return;}
+      state.balance = roundTo(state.balance-total,2);
+      const key = 'stock_'+m.symbol;
+      if(!state.holdings[key]){state.holdings[key]={type:'stock',symbol:m.symbol,name:m.name,qty,avgPrice:m.current};}
+      else{
+        const h = state.holdings[key];
+        const newQty = h.qty+qty;
+        const newAvg = ((h.qty*h.avgPrice)+(qty*m.current))/newQty;
+        h.qty = newQty; h.avgPrice = roundTo(newAvg,4);
+      }
+      state.transactions.unshift({time:nowISO(),type:'buy',market:'stock',symbol:m.symbol,name:m.name,qty,price:m.current,total});
+      syncUserState();
+      pushActivity(`${state.username} bought ${qty} ${m.symbol} for ${formatMoney(total)}`);
       refreshUIAll();
+      showModal('Successfully bought!<br><button onclick="hideModal()">OK</button>');
     }
-  });
-}
-function loadCompanies() {
-  firebase.database().ref('companies').on('value', snap=>{
-    if(snap.exists()) {
-      const companies = snap.val();
-      Object.values(companies).forEach(c=>{
-        state.markets.stocks[c.symbol] = {
-          symbol: c.symbol,
-          name: c.name,
-          current: c.price,
-          history: c.history || [{t:Date.now(),price:c.price}],
-          isUserCreated: true
-        };
-      });
+    function buySelectedCoin() {
+      if(!selectedCoinSymbol){showModal('কোনো coin সিলেক্ট করা হয়নি<br><button onclick="hideModal()">OK</button>');return;}
+      const qty = Number(document.getElementById('buy-qty-coin').value||0);
+      if(qty<=0){showModal('সঠিক quantity দিন<br><button onclick="hideModal()">OK</button>');return;}
+      const m = state.markets.coins[selectedCoinSymbol];
+      const total = roundTo(qty*m.current,2);
+      if(total > state.balance){showModal('প্রচুর টাকা নেই<br><button onclick="hideModal()">OK</button>');return;}
+      state.balance = roundTo(state.balance-total,2);
+      const key = 'coin_'+m.symbol;
+      if(!state.holdings[key]){state.holdings[key]={type:'coin',symbol:m.symbol,name:m.name,qty,avgPrice:m.current};}
+      else{
+        const h = state.holdings[key];
+        const newQty = h.qty+qty;
+        const newAvg = ((h.qty*h.avgPrice)+(qty*m.current))/newQty;
+        h.qty = newQty; h.avgPrice = roundTo(newAvg,8);
+      }
+      state.transactions.unshift({time:nowISO(),type:'buy',market:'coin',symbol:m.symbol,name:m.name,qty,price:m.current,total});
+      syncUserState();
+      pushActivity(`${state.username} bought ${qty} ${m.symbol} for ${formatMoney(total)}`);
       refreshUIAll();
+      showModal('Successfully bought!<br><button onclick="hideModal()">OK</button>');
     }
-  });
-}
-function loadActivities() {
-  firebase.database().ref('activities').on('value', snap=>{
-    if(snap.exists()) {
-      let acts = [];
-      snap.forEach(child=>{ acts.unshift(child.val()); });
-      state.activities = acts;
-      refreshUIAll();
+    function sellHolding(key) {
+      const h = state.holdings[key]; if(!h)return;
+      const marketset = h.type==='stock'?state.markets.stocks:state.markets.coins;
+      const m = marketset[h.symbol];
+      showModal(`Sell how many of ${h.symbol}?<br>You have ${h.qty}<br>
+        <input id="sell-qty-input" type="number" min="1" max="${h.qty}" value="${h.qty}" style="width:80px;margin:6px;">
+        <br><button class="btn-small" onclick="confirmSell('${key}')">Sell</button>
+        <button onclick="hideModal()" class="btn-small btn-danger">Cancel</button>`);
     }
-  });
-}
-// --- Price simulation ---
-let marketInterval = null;
-function startMarketSimulation() {
-  stopMarketSimulation();
-  const interval = Number(state.settings.updateInterval || 60000);
-  marketInterval = setInterval(() => { stepMarkets(); }, interval);
-  stepMarkets();
-  updateLastUpdateLabels();
-}
-function stopMarketSimulation() { if (marketInterval) clearInterval(marketInterval);}
-function stepMarkets() {
-  const now = Date.now();
-  Object.values(state.markets.stocks).forEach(m => {
-    updateStockPrice(m, now);
-  });
-  Object.values(state.markets.coins).forEach(m => {
-    updateCoinPrice(m, now);
-  });
-  updateLastUpdateLabels();
-}
-function updateStockPrice(m, now) {
-  const last = m.history[m.history.length-1].price;
-  const vol = 0.015, changeFactor = 1 + (randNormal()*vol);
-  let next = +(last * changeFactor); if (next <= 0.00001) next = last * 0.99;
-  next = roundTo(next, 4);
-  m.history.push({t: now, price: next});
-  m.current = next;
-  if (m.history.length > 200) m.history.shift();
-  firebase.database().ref('markets/stocks/'+m.symbol).set(m);
-  if (m.isUserCreated) {
-    firebase.database().ref('companies/'+m.symbol+'/price').set(next);
-    firebase.database().ref('companies/'+m.symbol+'/history').set(m.history);
-  }
-}
-function updateCoinPrice(m, now) {
-  const last = m.history[m.history.length-1].price;
-  const vol = 0.045, changeFactor = 1 + (randNormal()*vol);
-  let next = +(last * changeFactor); if (next <= 0.0000001) next = last * 0.98;
-  next = roundTo(next, 8);
-  m.history.push({t: now, price: next});
-  m.current = next;
-  if (m.history.length > 200) m.history.shift();
-  firebase.database().ref('markets/coins/'+m.symbol).set(m);
-}
-function updateLastUpdateLabels() {
-  const t = new Date().toLocaleTimeString();
-  document.getElementById('stocks-last-update').innerText = t;
-  document.getElementById('crypto-last-update').innerText = t;
-}
-// --- UI ---
-function showScreen(name) {
-  const screens = ['home','stocks','crypto','portfolio'];
-  screens.forEach(s => {document.getElementById('screen-'+s).classList.toggle('hidden',s!==name);});
-  document.querySelectorAll('.bottom-nav button').forEach(btn=>btn.classList.remove('active'));
-  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
-  if(name==='home'){document.getElementById('nav-home').classList.add('active');}
-  if(name==='stocks'){document.getElementById('nav-stocks').classList.add('active');}
-  if(name==='crypto'){document.getElementById('nav-crypto').classList.add('active');}
-  if(name==='portfolio'){document.getElementById('nav-portfolio').classList.add('active');}
-}
-function openSettings(){document.getElementById('settings-panel').style.display='block';}
-function closeSettings(){document.getElementById('settings-panel').style.display='none';}
-let selectedStockSymbol = null, marketChart = null;
-let selectedCoinSymbol = null, coinChart = null;
-function buildCompaniesList() {
-  const container = document.getElementById('companies-list');
-  container.innerHTML = '';
-  Object.values(state.markets.stocks).forEach(m => {
-    const el = document.createElement('div');
-    el.className = 'market-card';
-    el.innerHTML = `<div style="flex:1"><div class="market-name">${m.name}</div><div class="small-muted">${m.symbol}</div></div>
-    <div class="text-right"><div class="market-price">${formatMoney(m.current)}</div>
-    <div class="small-muted">${calcChangeText(m)}</div></div>`;
-    el.style.cursor = 'pointer';
-    el.onclick = () => selectStock(m.symbol);
-    container.appendChild(el);
-  });
-}
-function buildCoinsList() {
-  const container = document.getElementById('coins-list');
-  container.innerHTML = '';
-  Object.values(state.markets.coins).forEach(m => {
-    const el = document.createElement('div');
-    el.className = 'market-card';
-    el.innerHTML = `<div style="flex:1"><div class="market-name">${m.name}</div><div class="small-muted">${m.symbol}</div></div>
-    <div class="text-right"><div class="market-price">${formatMoney(m.current)}</div>
-    <div class="small-muted">${calcChangeText(m)}</div></div>`;
-    el.style.cursor = 'pointer';
-    el.onclick = () => selectCoin(m.symbol);
-    container.appendChild(el);
-  });
-}
-function calcChangeText(m) {
-  const hist = m.history; if(hist.length<2) return '—';
-  const prev = hist[hist.length-2].price, cur = m.current;
-  const diff = +(cur-prev), pct = +((diff/prev)*100).toFixed(2);
-  const sign = diff>=0?'+':'';
-  return `${sign}${pct}% (${formatMoney(diff)})`;
-}
-function selectStock(symbol) {
-  selectedStockSymbol = symbol;
-  const m = state.markets.stocks[symbol];
-  document.getElementById('market-selected-name').innerText = m.name;
-  document.getElementById('market-selected-symbol').innerText = m.symbol;
-  document.getElementById('market-selected-price').innerText = formatMoney(m.current);
-  document.getElementById('market-selected-change').innerText = calcChangeText(m);
-  document.getElementById('header-balance').innerText = formatMoney(state.balance);
-  document.getElementById('buy-qty').oninput = updateEstCost;
-  updateEstCost();
-  renderMarketChart(m, 'market-chart');
-}
-function selectCoin(symbol) {
-  selectedCoinSymbol = symbol;
-  const m = state.markets.coins[symbol];
-  document.getElementById('coin-selected-name').innerText = m.name;
-  document.getElementById('coin-selected-symbol').innerText = m.symbol;
-  document.getElementById('coin-selected-price').innerText = formatMoney(m.current);
-  document.getElementById('coin-selected-change').innerText = calcChangeText(m);
-  document.getElementById('header-balance-coin').innerText = formatMoney(state.balance);
-  document.getElementById('buy-qty-coin').oninput = updateEstCostCoin;
-  updateEstCostCoin();
-  renderMarketChart(m, 'coin-chart');
-}
-function updateEstCost() {
-  const qty = Number(document.getElementById('buy-qty').value||0);
-  if(!selectedStockSymbol){document.getElementById('est-cost').innerText='Est. cost: ৳ 0';return;}
-  const price = state.markets.stocks[selectedStockSymbol].current;
-  document.getElementById('est-cost').innerText = 'Est. cost: '+formatMoney(qty*price);
-}
-function updateEstCostCoin() {
-  const qty = Number(document.getElementById('buy-qty-coin').value||0);
-  if(!selectedCoinSymbol){document.getElementById('est-cost-coin').innerText='Est. cost: ৳ 0';return;}
-  const price = state.markets.coins[selectedCoinSymbol].current;
-  document.getElementById('est-cost-coin').innerText = 'Est. cost: '+formatMoney(qty*price);
-}
-function renderMarketChart(market, canvasId) {
-  const ctx = document.getElementById(canvasId).getContext('2d');
-  const labels = market.history.map(p=>(new Date(p.t)).toLocaleTimeString());
-  const data = market.history.map(p=>p.price);
-  const cfg = {
-    type:'line',
-    data:{labels,datasets:[{label:market.symbol,data,fill:true,tension:0.25,pointRadius:0}]},
-    options:{
-      animation:false,responsive:true,plugins:{legend:{display:false}},
-      scales:{x:{display:false},y:{ticks:{callback:function(val){return val;}}}}
+    function confirmSell(key) {
+      const qty = Number(document.getElementById('sell-qty-input').value);
+      const h = state.holdings[key]; if(!qty||qty<=0||qty>h.qty){hideModal();return;}
+      const marketset = h.type==='stock'?state.markets.stocks:state.markets.coins;
+      const m = marketset[h.symbol];
+      const total = roundTo(qty*m.current,2);
+      h.qty = roundTo(h.qty-qty,8); if(h.qty<=0.00000001)delete state.holdings[key];
+      state.balance = roundTo(state.balance+total,2);
+      state.transactions.unshift({time:nowISO(),type:'sell',market:h.type,symbol:h.symbol,name:h.name,qty,price:m.current,total});
+      syncUserState();
+      pushActivity(`${state.username} sold ${qty} ${h.symbol} for ${formatMoney(total)}`);
+      refreshUIAll();hideModal();
+      showModal('Sold successfully!<br><button onclick="hideModal()">OK</button>');
     }
-  };
-  if(canvasId==='market-chart'){if(marketChart){try{marketChart.destroy();}catch(e){}} marketChart=new Chart(ctx,cfg);}
-  else{if(coinChart){try{coinChart.destroy();}catch(e){}} coinChart=new Chart(ctx,cfg);}
-}
-function refreshChartsIfSelected() {
-  if(selectedStockSymbol&&marketChart){
-    const m = state.markets.stocks[selectedStockSymbol];
-    marketChart.data.labels = m.history.map(p=>(new Date(p.t)).toLocaleTimeString());
-    marketChart.data.datasets[0].data = m.history.map(p=>p.price);
-    marketChart.update();
-    document.getElementById('market-selected-price').innerText = formatMoney(m.current);
-    document.getElementById('market-selected-change').innerText = calcChangeText(m);
-  }
-  if(selectedCoinSymbol&&coinChart){
-    const m = state.markets.coins[selectedCoinSymbol];
-    coinChart.data.labels = m.history.map(p=>(new Date(p.t)).toLocaleTimeString());
-    coinChart.data.datasets[0].data = m.history.map(p=>p.price);
-    coinChart.update();
-    document.getElementById('coin-selected-price').innerText = formatMoney(m.current);
-    document.getElementById('coin-selected-change').innerText = calcChangeText(m);
-  }
-}
-// --- Buy/Sell/Portfolio ---
-function getPL(key) {
-  const h = state.holdings[key];
-  if (!h) return {percent: 0, value: 0};
-  const market = h.type==='stock'?state.markets.stocks[h.symbol]:state.markets.coins[h.symbol];
-  const curPrice = market?market.current:h.avgPrice;
-  const plTk = roundTo((curPrice-h.avgPrice)*h.qty,2);
-  const plPerc = h.avgPrice>0?roundTo(((curPrice-h.avgPrice)/h.avgPrice)*100,2):0;
-  return {percent:plPerc, value:plTk};
-}
-function buySelected() {
-  if(!selectedStockSymbol){showModal('কোনো কোম্পানি সিলেক্ট করা হয়নি<br><button onclick="hideModal()">OK</button>');return;}
-  const qty = Math.floor(Number(document.getElementById('buy-qty').value||0));
-  if(qty<=0){showModal('সঠিক quantity দিন<br><button onclick="hideModal()">OK</button>');return;}
-  const m = state.markets.stocks[selectedStockSymbol];
-  const total = roundTo(qty*m.current,2);
-  if(total > state.balance){showModal('প্রচুর টাকা নেই<br><button onclick="hideModal()">OK</button>');return;}
-  state.balance = roundTo(state.balance-total,2);
-  const key = 'stock_'+m.symbol;
-  if(!state.holdings[key]){state.holdings[key]={type:'stock',symbol:m.symbol,name:m.name,qty,avgPrice:m.current};}
-  else{
-    const h = state.holdings[key];
-    const newQty = h.qty+qty;
-    const newAvg = ((h.qty*h.avgPrice)+(qty*m.current))/newQty;
-    h.qty = newQty; h.avgPrice = roundTo(newAvg,4);
-  }
-  state.transactions.unshift({time:nowISO(),type:'buy',market:'stock',symbol:m.symbol,name:m.name,qty,price:m.current,total});
-  syncUserState();
-  const pl = getPL(key);
-  showModal(`Successfully bought!<br>
-    <span class="pl-perc ${pl.percent>=0?'positive':'negative'}">P/L: ${pl.percent>=0?'+':''}${pl.percent}% (${formatMoney(pl.value)})</span>
-    <br><button onclick="hideModal()">OK</button>`);
-  pushActivity(`${state.username} bought ${qty} ${m.symbol} @ ${formatMoney(m.current)}. P/L: ${pl.percent>=0?'+':''}${pl.percent}% (${formatMoney(pl.value)})`);
-  refreshUIAll();
-}
-function buySelectedCoin() {
-  const qty = Number(document.getElementById('buy-qty-coin').value||0);
-  if(qty<=0){showModal('সঠিক quantity দিন<br><button onclick="hideModal()">OK</button>');return;}
-  const m = state.markets.coins[selectedCoinSymbol];
-  const total = roundTo(qty*m.current,2);
-  if(total > state.balance){showModal('প্রচুর টাকা নেই<br><button onclick="hideModal()">OK</button>');return;}
-  state.balance = roundTo(state.balance-total,2);
-  const key = 'coin_'+m.symbol;
-  if(!state.holdings[key]){state.holdings[key]={type:'coin',symbol:m.symbol,name:m.name,qty,avgPrice:m.current};}
-  else{
-    const h = state.holdings[key];
-    const newQty = h.qty+qty;
-    const newAvg = ((h.qty*h.avgPrice)+(qty*m.current))/newQty;
-    h.qty = newQty; h.avgPrice = roundTo(newAvg,8);
-  }
-  state.transactions.unshift({time:nowISO(),type:'buy',market:'coin',symbol:m.symbol,name:m.name,qty,price:m.current,total});
-  syncUserState();
-  const pl = getPL(key);
-  showModal(`Successfully bought!<br>
-    <span class="pl-perc ${pl.percent>=0?'positive':'negative'}">P/L: ${pl.percent>=0?'+':''}${pl.percent}% (${formatMoney(pl.value)})</span>
-    <br><button onclick="hideModal()">OK</button>`);
-  pushActivity(`${state.username} bought ${qty} ${m.symbol} @ ${formatMoney(m.current)}. P/L: ${pl.percent>=0?'+':''}${pl.percent}% (${formatMoney(pl.value)})`);
-  refreshUIAll();
-}
-function sellHolding(key) {
-  const h = state.holdings[key]; if(!h)return;
-  const marketset = h.type==='stock'?state.markets.stocks:state.markets.coins;
-  const m = marketset[h.symbol];
-  showModal(`Sell how many of ${h.symbol}?<br>You have ${h.qty}<br>
-    <input id="sell-qty-input" type="number" min="1" max="${h.qty}" value="${h.qty}" style="width:80px;margin:6px;">
-    <div class="modal-btn-row">
-      <button class="btn-small" onclick="confirmSell('${key}')">Sell</button>
-      <button onclick="hideModal()" class="btn-small btn-danger">Cancel</button>
-    </div>`);
-}
-function confirmSell(key) {
-  const qty = Number(document.getElementById('sell-qty-input').value);
-  const h = state.holdings[key]; if(!qty||qty<=0||qty>h.qty){hideModal();return;}
-  const marketset = h.type==='stock'?state.markets.stocks:state.markets.coins;
-  const m = marketset[h.symbol];
-  const total = roundTo(qty*m.current,2);
-  h.qty = roundTo(h.qty-qty,8); if(h.qty<=0.00000001)delete state.holdings[key];
-  state.balance = roundTo(state.balance+total,2);
-  state.transactions.unshift({time:nowISO(),type:'sell',market:h.type,symbol:h.symbol,name:h.name,qty,price:m.current,total});
-  syncUserState();
-  const pl = getPL(key);
-  showModal(`Sold successfully!<br>
-    <span class="pl-perc ${pl.percent>=0?'positive':'negative'}">P/L: ${pl.percent>=0?'+':''}${pl.percent}% (${formatMoney(pl.value)})</span>
-    <br><button onclick="hideModal()">OK</button>`);
-  pushActivity(`${state.username} sold ${qty} ${h.symbol} @ ${formatMoney(m.current)}. P/L: ${pl.percent>=0?'+':''}${pl.percent}% (${formatMoney(pl.value)})`);
-  refreshUIAll();
-}
-function selectFromPortfolio(key) {
-  const h = state.holdings[key];
-  if (!h) return;
-  if (h.type === 'stock') {
-    selectStock(h.symbol); showScreen('stocks');
-  } else {
-    selectCoin(h.symbol); showScreen('crypto');
-  }
-}
-function calcHoldingsValue() {
-  let sum = 0;
-  Object.values(state.holdings).forEach(h=>{
-    const market = h.type==='stock'?state.markets.stocks[h.symbol]:state.markets.coins[h.symbol];
-    const price = market?market.current:h.avgPrice;
-    sum+=price*h.qty;
-  });
-  return roundTo(sum,2);
-}
-function calcTotalPL() {
-  let sum = 0;
-  Object.values(state.holdings).forEach(h=>{
-    const market = h.type==='stock'?state.markets.stocks[h.symbol]:state.markets.coins[h.symbol];
-    const price = market?market.current:h.avgPrice;
-    sum+=(price-h.avgPrice)*h.qty;
-  });
-  return roundTo(sum,2);
-}
-// --- Portfolio UI ---
-function refreshUIAll() {
-  document.getElementById('balance').innerText = formatMoney(state.balance);
-  document.getElementById('header-balance').innerText = formatMoney(state.balance);
-  document.getElementById('header-balance-coin').innerText = formatMoney(state.balance);
-  const holdingsValue = calcHoldingsValue();
-  document.getElementById('networth').innerText = formatMoney(state.balance+holdingsValue);
-  const totalPL = calcTotalPL();
-  const tplEl = document.getElementById('total-pl');
-  tplEl.innerText = formatMoney(totalPL);
-  tplEl.className = totalPL>=0?'text-xl font-bold positive':'text-xl font-bold negative';
-  const al = document.getElementById('activity-list');
-  al.innerHTML = '';
-  state.activities.slice(0,30).forEach(a=>{
-    const d = document.createElement('div');
-    d.className = 'notification-item';
-    d.style.display='flex';
-    d.style.justifyContent='space-between';
-    d.innerHTML = `<div><div class="notification-text${a.important?' positive':''}">${a.text}</div><div class="small-muted">${a.time}</div></div>`;
-    al.appendChild(d);
-  });
-  buildCompaniesList();
-  buildCoinsList();
-  const pl = document.getElementById('portfolio-list');
-  pl.innerHTML = '';
-  const keys = Object.keys(state.holdings);
-  if(keys.length===0){
-    pl.innerHTML = '<div class="hint">No holdings yet. Buy stocks or crypto to see them here.</div>';
-  }else{
-    keys.forEach(key=>{
+
+    // ---- Portfolio ----
+    function selectFromPortfolio(key) {
       const h = state.holdings[key];
-      const market = h.type==='stock'?state.markets.stocks[h.symbol]:state.markets.coins[h.symbol];
-      const curPrice = market?market.current:h.avgPrice;
-      const marketVal = roundTo(curPrice*h.qty,2);
-      const plData = getPL(key);
-      const plDelta = plData.value, plPerc = plData.percent;
-      const item = document.createElement('div');
-      item.className = 'portfolio-item';
-      item.innerHTML = `<div style="flex:1">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="pill">${h.symbol}</div>
-          <div><div style="font-weight:800">${h.name}</div>
-          <div class="small-muted">Qty: ${h.qty} • Avg: ${formatMoney(h.avgPrice)}</div>
-          <span class="pl-perc ${plPerc>=0?'positive':'negative'}">P/L: ${plPerc>=0?'+':''}${plPerc}% (${formatMoney(plDelta)})</span>
+      if (!h) return;
+      if (h.type === 'stock') {
+        selectStock(h.symbol); showScreen('stocks');
+      } else {
+        selectCoin(h.symbol); showScreen('crypto');
+      }
+    }
+    function calcHoldingsValue() {
+      let sum = 0;
+      Object.values(state.holdings).forEach(h=>{
+        const market = h.type==='stock'?state.markets.stocks[h.symbol]:state.markets.coins[h.symbol];
+        const price = market?market.current:h.avgPrice;
+        sum+=price*h.qty;
+      });
+      return roundTo(sum,2);
+    }
+    function calcTotalPL() {
+      let sum = 0;
+      Object.values(state.holdings).forEach(h=>{
+        const market = h.type==='stock'?state.markets.stocks[h.symbol]:state.markets.coins[h.symbol];
+        const price = market?market.current:h.avgPrice;
+        sum+=(price-h.avgPrice)*h.qty;
+      });
+      return roundTo(sum,2);
+    }
+
+    // ---- Loan System ----
+    let loanPlans = [
+      {amount:50000,interest:5},
+      {amount:100000,interest:7},
+      {amount:250000,interest:10}
+    ];
+    let bankBalance = 10000000000; // 10B
+
+    // --- Bank loan DB management ---
+    function saveLoanToBank(userId, loanObj) {
+      firebase.database().ref('loans/'+userId).set(loanObj);
+    }
+    function removeLoanFromBank(userId) {
+      firebase.database().ref('loans/'+userId).remove();
+    }
+
+    // --- Bank admin dashboard loans ---
+    let bankLoans = {};
+    function loadLoansForBank() {
+      firebase.database().ref('loans').on('value', snap=>{
+        bankLoans = {};
+        if(snap.exists()) snap.forEach(child=>{
+          bankLoans[child.key] = child.val();
+        });
+        renderBankAdminDashboard();
+      });
+    }
+
+    function openBankModal() {
+      if (state.loan && !state.loan.repaid) {
+        showModal(`<b>You already have a loan.</b><br>
+          Amount: ${formatMoney(state.loan.amount)}<br>
+          Interest: ${state.loan.interest}%<br>
+          <button onclick="repayLoan()" class="btn-small">Repay</button>
+          <button onclick="hideModal()">Close</button>
+          <br><div class="hint">Bank Balance: ${formatMoney(bankBalance)}</div>`);
+        return;
+      }
+      let plansHtml = loanPlans.map((plan,i)=>`
+        <div style="margin-bottom:8px; border-radius:8px; background:#222;padding:10px;">
+          <b>${formatMoney(plan.amount)}</b> at <span class="pill">${plan.interest}% interest</span>
+          <br><button onclick="confirmLoan(${i})" style="margin-top:7px;" class="btn-small">Take loan</button>
+        </div>
+      `).join('');
+      let adminHtml = '';
+      if (isAdmin) {
+        adminHtml = `<hr><b>Admin: Loan Plans</b>
+          <button onclick="addLoanPlanModal()" class="btn-small">Add Plan</button>
+          <button onclick="editLoanPlansModal()" class="btn-small">Edit</button>`;
+      }
+      showModal(`<b>Bank Loans</b><br>${plansHtml}${adminHtml}
+        <div class="hint">Bank Balance: ${formatMoney(bankBalance)}</div>
+        <button onclick="hideModal()">Close</button>`);
+    }
+    function confirmLoan(idx) {
+      const plan = loanPlans[idx];
+      showModal(`<b>Are you sure?</b><br>
+        Take loan of ${formatMoney(plan.amount)} at ${plan.interest}% interest?<br>
+        <button class="btn-small" onclick="takeLoan(${idx})">Yes</button>
+        <button onclick="hideModal()" class="btn-small btn-danger">No</button>
+      `);
+    }
+    function takeLoan(idx) {
+      const plan = loanPlans[idx];
+      if (bankBalance < plan.amount) {
+        showModal("Bank doesn't have enough money!<br><button onclick='hideModal()'>OK</button>"); return;
+      }
+      state.loan = {...plan, takenAt: Date.now(), owner: state.username, repaid: false};
+      state.balance += plan.amount;
+      bankBalance -= plan.amount;
+      syncUserState();
+      saveLoanToBank(user.uid, {...state.loan, userId:user.uid, username:state.username, email:user.email});
+      pushActivity(`${state.username} took loan of ${formatMoney(plan.amount)} at ${plan.interest}%`);
+      hideModal();
+      refreshUIAll();
+    }
+    function repayLoan() {
+      if (!state.loan || state.loan.repaid) {hideModal();return;}
+      let repayAmount = Math.ceil(state.loan.amount*(1+state.loan.interest/100));
+      if (state.balance < repayAmount) {
+        showModal(`Not enough balance! Need ${formatMoney(repayAmount)}<br><button onclick="hideModal()">OK</button>`); return;
+      }
+      state.balance -= repayAmount;
+      state.loan.repaid = true;
+      bankBalance += repayAmount;
+      removeLoanFromBank(user.uid);
+      syncUserState();
+      pushActivity(`${state.username} repaid loan of ${formatMoney(repayAmount)}`);
+      hideModal();
+      refreshUIAll();
+    }
+    function addLoanPlanModal() {
+      showModal(`<b>Add Loan Plan</b><br>
+        Amount: <input id="loan-amt" type="number" min="1"><br>
+        Interest (%): <input id="loan-int" type="number" min="1"><br>
+        <button class="btn-small" onclick="addLoanPlan()">Add</button>
+        <button onclick="hideModal()" class="btn-small btn-danger">Cancel</button>`);
+    }
+    function addLoanPlan() {
+      let amt = Number(document.getElementById('loan-amt').value);
+      let int = Number(document.getElementById('loan-int').value);
+      if (amt>0 && int>0) {loanPlans.push({amount:amt,interest:int});}
+      hideModal();
+      openBankModal();
+    }
+    function editLoanPlansModal() {
+      let plansHtml = loanPlans.map((plan,i)=>`
+        <div>
+          <b>${formatMoney(plan.amount)}</b> @ <span>${plan.interest}%</span>
+          <button onclick="removeLoanPlan(${i})" class="btn-small btn-danger">Remove</button>
+        </div>
+      `).join('');
+      showModal(`<b>Edit Loan Plans</b><br>${plansHtml}<button onclick="hideModal()">Done</button>`);
+    }
+    function removeLoanPlan(i) {
+      loanPlans.splice(i,1); hideModal(); openBankModal();
+    }
+
+    // ---- Bank Admin Dashboard ----
+    function renderBankAdminDashboard() {
+      const container = document.getElementById('bank-admin-dashboard');
+      if (!container) return;
+      if (!isAdmin) { container.innerHTML = ""; return; }
+      let html = `<div class="bank-dashboard">
+        <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:10px;">Bank Loan Dashboard</h3>
+        <div style="margin-bottom:8px;font-size:1.02rem;">Bank Balance: <b>${formatMoney(bankBalance)}</b></div>
+        <div>`;
+      const now = new Date();
+      let count = 0;
+      for(const uid in bankLoans) {
+        const loan = bankLoans[uid];
+        let date = loan.takenAt ? (new Date(loan.takenAt)).toLocaleDateString() : "-";
+        let repayAmount = Math.ceil(loan.amount*(1+loan.interest/100));
+        html += `<div class="bank-loan-row">
+          <div class="loan-details">
+            <b>${loan.username}</b> (${loan.email})<br>
+            Loan: <span class="pill">${formatMoney(loan.amount)}</span> at <span class="pill">${loan.interest}%</span>
+            <br>Date: ${date}
+            <br>Repay due: <span class="pill">${formatMoney(repayAmount)}</span>
+            <br>Current Balance: <span id="bank-loan-bal-${uid}">Loading...</span>
           </div>
-        </div></div>
-        <div style="text-align:right">
-          <div style="font-weight:800">${formatMoney(marketVal)}</div>
-          <div class="${plDelta>=0?'positive':'negative'}">${plDelta>=0?'+':''}${formatMoney(plDelta)}</div>
-          <div class="mt-2" style="display:flex;gap:6px;justify-content:flex-end">
-            <button class="btn-small" onclick="selectFromPortfolio('${key}')">Open</button>
-            <button class="btn-small btn-danger" onclick="sellHolding('${key}')">Sell</button>
+          <div class="loan-actions">
+            <button class="btn-small" onclick="forceRepayLoan('${uid}',${repayAmount})">Force Repay</button>
           </div>
         </div>`;
-      pl.appendChild(item);
-    });
-  }
-  const txEl = document.getElementById('transactions-list');
-  txEl.innerHTML = '';
-  if(state.transactions.length===0){
-    txEl.innerHTML = '<div class="hint">No transactions yet.</div>';
-  }else{
-    state.transactions.slice(0,80).forEach(tx=>{
-      const el = document.createElement('div');
-      el.className = 'notification-item';
-      el.innerHTML = `<div style="flex:1"><div style="font-weight:800">${tx.type.toUpperCase()} ${tx.symbol} x ${tx.qty}</div><div class="small-muted">${tx.time}</div></div>`;
-      txEl.appendChild(el);
-    });
-  }
-  refreshChartsIfSelected();
-  updateLastUpdateLabels();
-}
-// --- Company creation (unchanged) ---
-function openCompanyModal() {
-  if(state.balance < 1000000) {
-    showModal('Not enough balance to create company.<br><button onclick="hideModal()">OK</button>'); return;
-  }
-  if(state.userCompany) {
-    showModal('You already have a company.<br><button onclick="hideModal()">OK</button>'); return;
-  }
-  showModal(`<b>Create Company</b><br>
-    Name: <span style="font-weight:800">${state.username}'s Group of Industries</span><br>
-    Cost: <span class="pill">${formatMoney(1000000)}</span><br>
-    <div class="modal-btn-row">
-      <button class="btn-small" onclick="createCompany()">Create</button>
-      <button onclick="hideModal()" class="btn-small btn-danger">Cancel</button>
-    </div>`);
-}
-function createCompany() {
-  state.balance -= 1000000;
-  state.userCompany = {
-    name: state.username+"'s Group of Industries",
-    owner: user.uid,
-    shares: 100,
-    symbol: "USR"+user.uid.substring(0,7).toUpperCase()
-  };
-  firebase.database().ref('companies/'+state.userCompany.symbol).set({
-    ...state.userCompany, price: 120, history: [{t:Date.now(),price:120}]
-  });
-  firebase.database().ref('markets/stocks/'+state.userCompany.symbol).set({
-    symbol: state.userCompany.symbol,
-    name: state.userCompany.name,
-    current: 120,
-    history: [{t:Date.now(),price:120}],
-    isUserCreated: true
-  });
-  state.holdings['stock_'+state.userCompany.symbol] = {
-    type:'stock', symbol:state.userCompany.symbol, name:state.userCompany.name, qty:100, avgPrice:120
-  };
-  syncUserState();
-  pushActivity(`${state.username} created company ${state.userCompany.name}`, true);
-  hideModal();
-  refreshUIAll();
-}
+        count++;
+      }
+      if(count==0) html += '<div class="hint">No active loans.</div>';
+      html += `</div></div>`;
+      container.innerHTML = html;
+      // Load all loan users' balance
+      for(const uid in bankLoans) {
+        firebase.database().ref('users/'+uid+'/balance').once('value').then(snap=>{
+          document.getElementById('bank-loan-bal-'+uid).innerText = formatMoney(snap.val()||0);
+        });
+      }
+    }
 
-function applySettings() {
-  state.settings.updateInterval = Number(document.getElementById('setting-speed').value)||60000;
-  syncUserState();closeSettings();
-  startMarketSimulation();
-}
-window.onload = function() { showScreen('home'); };
-</script>
+    // ---- Admin force repay ----
+    function forceRepayLoan(uid, repayAmount) {
+      // Check user balance
+      firebase.database().ref('users/'+uid).once('value').then(snap=>{
+        if(!snap.exists()) { showModal("User not found."); return; }
+        const ustate = snap.val();
+        if((ustate.balance||0) < repayAmount) {
+          showModal("User doesn't have enough balance to force repay."); return;
+        }
+        ustate.balance -= repayAmount;
+        if(ustate.loan) ustate.loan.repaid = true;
+        firebase.database().ref('users/'+uid).set(ustate);
+        removeLoanFromBank(uid);
+        bankBalance += repayAmount;
+        pushActivity(`Bank forced ${ustate.username} to repay loan of ${formatMoney(repayAmount)}`);
+        showModal("Loan forcibly repaid!");
+        renderBankAdminDashboard();
+      });
+    }
+
+    // ---- Company Creation ----
+    function openCompanyModal() {
+      if(state.balance < 1000000) {
+        showModal('Not enough balance to create company.<br><button onclick="hideModal()">OK</button>'); return;
+      }
+      if(state.userCompany) {
+        showModal('You already have a company.<br><button onclick="hideModal()">OK</button>'); return;
+      }
+      showModal(`<b>Create Company</b><br>
+        Name: <span style="font-weight:800">${state.username}'s Group of Industries</span><br>
+        Cost: <span class="pill">${formatMoney(1000000)}</span><br>
+        <button class="btn-small" onclick="createCompany()">Create</button>
+        <button onclick="hideModal()" class="btn-small btn-danger">Cancel</button>
+      `);
+    }
+    function createCompany() {
+      state.balance -= 1000000;
+      state.userCompany = {
+        name: state.username+"'s Group of Industries",
+        owner: user.uid,
+        shares: 100,
+        symbol: "USR"+user.uid.substring(0,7).toUpperCase()
+      };
+      firebase.database().ref('companies/'+state.userCompany.symbol).set({
+        ...state.userCompany, price: 120, history: [{t:Date.now(),price:120}]
+      });
+      firebase.database().ref('markets/stocks/'+state.userCompany.symbol).set({
+        symbol: state.userCompany.symbol,
+        name: state.userCompany.name,
+        current: 120,
+        history: [{t:Date.now(),price:120}]
+      });
+      state.holdings['stock_'+state.userCompany.symbol] = {
+        type:'stock', symbol:state.userCompany.symbol, name:state.userCompany.name, qty:100, avgPrice:120
+      };
+      syncUserState();
+      pushActivity(`${state.username} created company ${state.userCompany.name}`);
+      hideModal();
+      refreshUIAll();
+    }
+
+    // ---- UI Refresh ----
+    function refreshUIAll() {
+      document.getElementById('balance').innerText = formatMoney(state.balance);
+      document.getElementById('header-balance').innerText = formatMoney(state.balance);
+      document.getElementById('header-balance-coin').innerText = formatMoney(state.balance);
+      const holdingsValue = calcHoldingsValue();
+      document.getElementById('networth').innerText = formatMoney(state.balance+holdingsValue);
+      const totalPL = calcTotalPL();
+      const tplEl = document.getElementById('total-pl');
+      tplEl.innerText = formatMoney(totalPL);
+      tplEl.className = totalPL>=0?'text-xl font-bold positive':'text-xl font-bold negative';
+      const al = document.getElementById('activity-list');
+      al.innerHTML = '';
+      state.activities.slice(0,30).forEach(a=>{
+        const d = document.createElement('div');
+        d.className = 'notification-item';
+        d.style.display='flex';
+        d.style.justifyContent='space-between';
+        d.innerHTML = `<div><div class="notification-text">${a.text}</div><div class="small-muted">${a.time}</div></div>`;
+        al.appendChild(d);
+      });
+      buildCompaniesList();
+      buildCoinsList();
+      const pl = document.getElementById('portfolio-list');
+      pl.innerHTML = '';
+      const keys = Object.keys(state.holdings);
+      if(keys.length===0){
+        pl.innerHTML = '<div class="hint">No holdings yet. Buy stocks or crypto to see them here.</div>';
+      }else{
+        keys.forEach(key=>{
+          const h = state.holdings[key];
+          const market = h.type==='stock'?state.markets.stocks[h.symbol]:state.markets.coins[h.symbol];
+          const curPrice = market?market.current:h.avgPrice;
+          const marketVal = roundTo(curPrice*h.qty,2);
+          const plDelta = roundTo((curPrice-h.avgPrice)*h.qty,2);
+          const item = document.createElement('div');
+          item.className = 'portfolio-item';
+          item.innerHTML = `<div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="pill">${h.symbol}</div>
+              <div><div style="font-weight:800">${h.name}</div>
+              <div class="small-muted">Qty: ${h.qty} • Avg: ${formatMoney(h.avgPrice)}</div></div>
+            </div></div>
+            <div style="text-align:right">
+              <div style="font-weight:800">${formatMoney(marketVal)}</div>
+              <div class="${plDelta>=0?'positive':'negative'}">${plDelta>=0?'+':''}${formatMoney(plDelta)}</div>
+              <div class="mt-2" style="display:flex;gap:6px;justify-content:flex-end">
+                <button class="btn-small" onclick="selectFromPortfolio('${key}')">Open</button>
+                <button class="btn-small btn-danger" onclick="sellHolding('${key}')">Sell</button>
+              </div>
+            </div>`;
+          pl.appendChild(item);
+        });
+      }
+      const txEl = document.getElementById('transactions-list');
+      txEl.innerHTML = '';
+      if(state.transactions.length===0){
+        txEl.innerHTML = '<div class="hint">No transactions yet.</div>';
+      }else{
+        state.transactions.slice(0,80).forEach(tx=>{
+          const el = document.createElement('div');
+          el.className = 'notification-item';
+          el.innerHTML = `<div style="flex:1"><div style="font-weight:800">${tx.type.toUpperCase()} ${tx.symbol} x ${tx.qty}</div><div class="small-muted">${tx.time}</div></div>`;
+          txEl.appendChild(el);
+        });
+      }
+      renderBankAdminDashboard();
+      refreshChartsIfSelected();
+      updateLastUpdateLabels();
+    }
+
+    // ---- Settings ----
+    function applySettings() {
+      state.settings.updateInterval = Number(document.getElementById('setting-speed').value)||60000;
+      syncUserState();closeSettings();
+      startMarketSimulation();
+    }
+
+    window.onload = function() { showScreen('home'); };
+  </script>
 </body>
-  </html>
+                  </html>
