@@ -12,10 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
   <style>
     body { font-family: 'Balsamiq Sans', sans-serif; background: #111827; }
-    @font-face {
-      font-family: 'Balsamiq Sans';
-      src: url('fonts/BalsamiqSans-Regular.ttf') format('truetype');
-    }
+    @font-face { font-family: 'Balsamiq Sans'; src: url('fonts/BalsamiqSans-Regular.ttf') format('truetype'); }
     .market-card { background: #181f2d; border: 1px solid #222; border-radius: 16px; padding: 16px; margin-bottom: 18px; box-shadow: 0 4px 18px #0002; transition: box-shadow .3s;}
     .market-card:hover { box-shadow: 0 10px 32px #0005;}
     .market-name { font-weight:800; font-size:1.18rem; letter-spacing:1px;}
@@ -54,6 +51,8 @@
     .modal-btn-row {display:flex;gap:13px;justify-content:center;margin-top:15px;}
     .activity-important {color:#4ade80; font-weight:700;}
     .company-owner {color:#f59e42;font-weight:700;}
+    .signout-btn {margin:16px 0 0 0; padding:11px 32px; border-radius:12px; background:#ef4444; color:white; font-weight:800; border:none; cursor:pointer; font-size:1.14rem;}
+    .signout-btn:hover {background:#dc2626;}
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -223,13 +222,13 @@
             <button class="btn-small" onclick="openBankModal()">Bank</button>
             <button class="btn-small" onclick="openCompanyModal()">Create Company</button>
             <div id="portfolio-list" class="flex-col-scroll"></div>
+            <button class="signout-btn" onclick="signOut()">Sign Out</button>
           </div>
           <div>
             <h3 class="text-xl font-bold mb-2">Transactions</h3>
             <div id="transactions-list" class="flex-col-scroll"></div>
           </div>
         </div>
-        <!-- Bank Admin loan list -->
         <div id="bank-admin-section" style="margin-top:2.5rem;"></div>
       </section>
       <div id="settings-panel">
@@ -260,7 +259,7 @@
     </nav>
   </div>
   <script>
-    // Firebase config: আপনারটি বসিয়ে নিন
+    // ---- Firebase ----
     const firebaseConfig = {
       apiKey: "AIzaSyD8z3e5j9y48wJkyU89F7M19cDfxQ4P8uo",
       authDomain: "chess-online-ebc1f.firebaseapp.com",
@@ -272,6 +271,7 @@
     };
     firebase.initializeApp(firebaseConfig);
 
+    // ---- Modal ----
     function showModal(content, onClose) {
       const modal = document.getElementById('universal-modal');
       const modalContent = document.getElementById('universal-modal-content');
@@ -281,6 +281,7 @@
     }
     function hideModal() {document.getElementById('universal-modal').style.display='none';}
 
+    // ---- Utility ----
     function formatMoney(n) {
       n = Number(n || 0);
       if (n >= 1e9) return '৳ ' + (n/1e9).toFixed(2) + 'B';
@@ -288,8 +289,12 @@
       if (n >= 1e3) return '৳ ' + (n/1e3).toFixed(2) + 'K';
       return '৳ ' + n.toLocaleString(undefined, {maximumFractionDigits:2});
     }
+    function nowISO() { return (new Date()).toLocaleString(); }
+    function roundTo(n, digits) {const m = Math.pow(10, digits||2); return Math.round(n*m)/m;}
+    function randNormal() { let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v);}
 
-    let user = null, isAdmin = false;
+    // ---- User/Auth ----
+    let user = null, isAdmin = false, bankBalance = 10000000000; // 10B
     let state = {
       balance: 100000,
       holdings: {},
@@ -301,7 +306,35 @@
       userCompany: null,
       loan: null
     };
-    let bankBalance = 10000000000; // 10B
+    // Online user tracking
+    let onlineRef = null;
+    function setUserOnline() {
+      onlineRef = firebase.database().ref('online/'+user.uid);
+      onlineRef.set({username:state.username, lastActive:Date.now()});
+      onlineRef.onDisconnect().remove();
+    }
+    function getOnlineUserCount(callback) {
+      firebase.database().ref('online').once('value', snap=>{
+        callback(snap.numChildren());
+      });
+    }
+
+    // ---- Persistent Login ----
+    function setUserSession(uid) {
+      localStorage.setItem('bizempire_uid', uid);
+    }
+    function getUserSession() {
+      return localStorage.getItem('bizempire_uid');
+    }
+    function clearUserSession() {
+      localStorage.removeItem('bizempire_uid');
+    }
+    function signOut() {
+      firebase.auth().signOut().then(()=>{
+        clearUserSession();
+        location.reload();
+      });
+    }
 
     // ---- Firebase realtime sync ----
     function syncUserState() {
@@ -359,7 +392,6 @@
             firebase.database().ref('users/'+uid).set(u);
             bankBalance += repayAmt;
             pushActivity(`Bank collected repayment ${formatMoney(repayAmt)} from ${u.username}`, true);
-            // Send notification/activity for user
             firebase.database().ref('activities').push({
               time: nowISO(),
               user: 'Bank',
@@ -382,6 +414,7 @@
         user = result.user;
         isAdmin = (user.email === '1234@gmail.com');
         state.username = user.displayName;
+        setUserSession(user.uid); // Persistent login
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app').style.display = '';
         document.getElementById('display-username').innerText = state.username;
@@ -397,6 +430,7 @@
           }
           loadUserState();
         });
+        setUserOnline();
         loadMarkets();
         loadCompanies();
         loadActivities();
@@ -404,7 +438,36 @@
         if (isAdmin) setTimeout(loadLoanListForAdmin, 1200);
       });
     }
-
+    // Auto login if session present
+    window.onload = function() {
+      let sess = getUserSession();
+      if (sess) {
+        firebase.auth().onAuthStateChanged(function(u){
+          if (u) {
+            user = u;
+            state.username = user.displayName;
+            isAdmin = (user.email === '1234@gmail.com');
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app').style.display = '';
+            document.getElementById('display-username').innerText = state.username;
+            setUserOnline();
+            loadUserState();
+            loadMarkets();
+            loadCompanies();
+            loadActivities();
+            startMarketSimulation();
+            if (isAdmin) setTimeout(loadLoanListForAdmin, 1200);
+          } else {
+            document.getElementById('auth-screen').style.display = '';
+            document.getElementById('app').style.display = 'none';
+          }
+        });
+      } else {
+        document.getElementById('auth-screen').style.display = '';
+        document.getElementById('app').style.display = 'none';
+      }
+      showScreen('home');
+    };
     // ---- Market ----
     const FAKE_COMPANIES = [
       {symbol:'TNVA', name:'TechNova Ltd', base: 120.00},
@@ -423,13 +486,12 @@
       {symbol:'SOLR', name:'Solara', base: 45.50},
       {symbol:'MINT', name:'MintCoin', base: 0.12}
     ];
-
     function loadMarkets() {
       firebase.database().ref('markets/stocks').once('value', snap=>{
         if(!snap.exists()) {
           let stocks = {};
           FAKE_COMPANIES.forEach(c=>{
-            stocks[c.symbol] = {symbol:c.symbol, name:c.name, current:c.base, history:[{t:Date.now(),price:c.base}]};
+            stocks[c.symbol] = {symbol:c.symbol, name:c.name, current:c.base, history:[{t:Date.now(),price:c.base}], isUserCreated: false};
           });
           firebase.database().ref('markets/stocks').set(stocks);
         }
@@ -451,7 +513,6 @@
         }
       });
     }
-
     function loadCompanies() {
       firebase.database().ref('companies').on('value', snap=>{
         if(snap.exists()) {
@@ -461,14 +522,14 @@
               symbol: c.symbol,
               name: c.name,
               current: c.price,
-              history: c.history || [{t:Date.now(),price:c.price}]
+              history: c.history || [{t:Date.now(),price:c.price}],
+              isUserCreated: true
             };
           });
           refreshUIAll();
         }
       });
     }
-
     function loadActivities() {
       firebase.database().ref('activities').on('value', snap=>{
         if(snap.exists()) {
@@ -479,7 +540,6 @@
         }
       });
     }
-
     // ---- Price simulation ----
     let marketInterval = null;
     function startMarketSimulation() {
@@ -493,36 +553,50 @@
     function stepMarkets() {
       const now = Date.now();
       Object.values(state.markets.stocks).forEach(m => {
-        const last = m.history[m.history.length-1].price;
-        const vol = 0.015, changeFactor = 1 + (randNormal()*vol);
-        let next = +(last * changeFactor); if (next <= 0.00001) next = last * 0.99;
-        next = roundTo(next, 4);
-        m.history.push({t: now, price: next});
-        m.current = next;
-        if (m.history.length > 200) m.history.shift();
-        firebase.database().ref('markets/stocks/'+m.symbol).set(m);
+        if (m.isUserCreated) {
+          getOnlineUserCount(function(count){
+            if(count>0){ // At least one user online
+              updateStockPrice(m, now);
+            }
+          });
+        } else {
+          updateStockPrice(m, now);
+        }
       });
       Object.values(state.markets.coins).forEach(m => {
-        const last = m.history[m.history.length-1].price;
-        const vol = 0.045, changeFactor = 1 + (randNormal()*vol);
-        let next = +(last * changeFactor); if (next <= 0.0000001) next = last * 0.98;
-        next = roundTo(next, 8);
-        m.history.push({t: now, price: next});
-        m.current = next;
-        if (m.history.length > 200) m.history.shift();
-        firebase.database().ref('markets/coins/'+m.symbol).set(m);
+        updateCoinPrice(m, now);
       });
       updateLastUpdateLabels();
     }
-    function randNormal() { let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v);}
-    function roundTo(n, digits) {const m = Math.pow(10, digits||2); return Math.round(n*m)/m;}
-    function nowISO() { return (new Date()).toLocaleString(); }
+    function updateStockPrice(m, now) {
+      const last = m.history[m.history.length-1].price;
+      const vol = 0.015, changeFactor = 1 + (randNormal()*vol);
+      let next = +(last * changeFactor); if (next <= 0.00001) next = last * 0.99;
+      next = roundTo(next, 4);
+      m.history.push({t: now, price: next});
+      m.current = next;
+      if (m.history.length > 200) m.history.shift();
+      firebase.database().ref('markets/stocks/'+m.symbol).set(m);
+      if (m.isUserCreated) {
+        firebase.database().ref('companies/'+m.symbol+'/price').set(next);
+        firebase.database().ref('companies/'+m.symbol+'/history').set(m.history);
+      }
+    }
+    function updateCoinPrice(m, now) {
+      const last = m.history[m.history.length-1].price;
+      const vol = 0.045, changeFactor = 1 + (randNormal()*vol);
+      let next = +(last * changeFactor); if (next <= 0.0000001) next = last * 0.98;
+      next = roundTo(next, 8);
+      m.history.push({t: now, price: next});
+      m.current = next;
+      if (m.history.length > 200) m.history.shift();
+      firebase.database().ref('markets/coins/'+m.symbol).set(m);
+    }
     function updateLastUpdateLabels() {
       const t = new Date().toLocaleTimeString();
       document.getElementById('stocks-last-update').innerText = t;
       document.getElementById('crypto-last-update').innerText = t;
     }
-
     // ---- UI ----
     function showScreen(name) {
       const screens = ['home','stocks','crypto','portfolio'];
@@ -533,12 +607,10 @@
       if(name==='stocks'){document.getElementById('nav-stocks').classList.add('active');}
       if(name==='crypto'){document.getElementById('nav-crypto').classList.add('active');}
       if(name==='portfolio'){document.getElementById('nav-portfolio').classList.add('active');}
-      // Admin loan list refresh
       if(name==='portfolio' && isAdmin) loadLoanListForAdmin();
     }
     function openSettings(){document.getElementById('settings-panel').style.display='block';}
     function closeSettings(){document.getElementById('settings-panel').style.display='none';}
-
     let selectedStockSymbol = null, marketChart = null;
     let selectedCoinSymbol = null, coinChart = null;
     function buildCompaniesList() {
@@ -547,7 +619,7 @@
       Object.values(state.markets.stocks).forEach(m => {
         const el = document.createElement('div');
         el.className = 'market-card';
-        el.innerHTML = `<div style="flex:1"><div class="market-name">${m.name}</div><div class="small-muted">${m.symbol}</div></div>
+        el.innerHTML = `<div style="flex:1"><div class="market-name">${m.name}${m.isUserCreated?" <span class='company-owner'>(User)</span>":""}</div><div class="small-muted">${m.symbol}</div></div>
         <div class="text-right"><div class="market-price">${formatMoney(m.current)}</div>
         <div class="small-muted">${calcChangeText(m)}</div></div>`;
         el.style.cursor = 'pointer';
@@ -645,7 +717,6 @@
         document.getElementById('coin-selected-change').innerText = calcChangeText(m);
       }
     }
-
     function buySelected() {
       if(!selectedStockSymbol){showModal('কোনো কোম্পানি সিলেক্ট করা হয়নি<br><button onclick="hideModal()">OK</button>');return;}
       const qty = Math.floor(Number(document.getElementById('buy-qty').value||0));
@@ -715,7 +786,6 @@
       refreshUIAll();hideModal();
       showModal('Sold successfully!<br><button onclick="hideModal()">OK</button>');
     }
-
     function selectFromPortfolio(key) {
       const h = state.holdings[key];
       if (!h) return;
@@ -743,7 +813,6 @@
       });
       return roundTo(sum,2);
     }
-
     let loanPlans = [
       {amount:50000,interest:5},
       {amount:100000,interest:7},
@@ -843,7 +912,6 @@
     function removeLoanPlan(i) {
       loanPlans.splice(i,1); hideModal(); openBankModal();
     }
-
     function openCompanyModal() {
       if(state.balance < 1000000) {
         showModal('Not enough balance to create company.<br><button onclick="hideModal()">OK</button>'); return;
@@ -874,7 +942,8 @@
         symbol: state.userCompany.symbol,
         name: state.userCompany.name,
         current: 120,
-        history: [{t:Date.now(),price:120}]
+        history: [{t:Date.now(),price:120}],
+        isUserCreated: true
       });
       state.holdings['stock_'+state.userCompany.symbol] = {
         type:'stock', symbol:state.userCompany.symbol, name:state.userCompany.name, qty:100, avgPrice:120
@@ -884,7 +953,6 @@
       hideModal();
       refreshUIAll();
     }
-
     function refreshUIAll() {
       document.getElementById('balance').innerText = formatMoney(state.balance);
       document.getElementById('header-balance').innerText = formatMoney(state.balance);
@@ -952,18 +1020,15 @@
       }
       refreshChartsIfSelected();
       updateLastUpdateLabels();
-      // Bank admin loan list
       if (isAdmin && document.getElementById('bank-admin-section')) {
         loadLoanListForAdmin();
       }
     }
-
     function applySettings() {
       state.settings.updateInterval = Number(document.getElementById('setting-speed').value)||60000;
       syncUserState();closeSettings();
       startMarketSimulation();
     }
-    window.onload = function() { showScreen('home'); };
   </script>
 </body>
-                    </html>
+          </html>
