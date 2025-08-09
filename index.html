@@ -16,34 +16,44 @@
       font-family: 'Balsamiq Sans';
       src: url('fonts/BalsamiqSans-Regular.ttf') format('truetype');
     }
-    .market-card { background: #111827; border: 1px solid #222; border-radius: 12px; padding: 12px; margin-bottom: 12px; display:flex; align-items:center; gap:12px; }
-    .market-name { font-weight:800; font-size:1.05rem; }
-    .market-price { font-weight:700; font-size:1.05rem; }
-    .small-muted { color:#9ca3af; font-size:0.9rem; }
+    .market-card { background: #181826; border: 1px solid #222; border-radius: 16px; padding: 18px; margin-bottom: 18px; display:flex; align-items:center; gap:14px; box-shadow: 0 2px 8px #2226; }
+    .market-name { font-weight:900; font-size:1.13rem; letter-spacing:0.04em; }
+    .market-price { font-weight:800; font-size:1.15rem; }
+    .small-muted { color:#9ca3af; font-size:0.96rem; }
     .positive { color:#4ade80; font-weight:800; }
     .negative { color:#ef4444; font-weight:800; }
-    .flex-col-scroll { display:flex; flex-direction:column; gap:8px; max-height:60vh; overflow:auto; padding-right:6px; }
-    .portfolio-item { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px; background:#0f1724; border-radius:10px; border:1px solid #222; }
-    .btn-small { padding:8px 12px; border-radius:8px; background:#2563eb; color:white; font-weight:700; border:none; cursor:pointer; }
+    .flex-col-scroll { display:flex; flex-direction:column; gap:12px; max-height:60vh; overflow:auto; padding-right:8px;}
+    .portfolio-item { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:13px 12px; background:#0f1724; border-radius:12px; border:1px solid #222; box-shadow:0 2px 8px #2222;}
+    .btn-small { padding:8px 14px; border-radius:8px; background:#2563eb; color:white; font-weight:700; border:none; cursor:pointer; transition: background 0.2s;}
+    .btn-small:hover { background: #1d4ed8;}
     .btn-danger { background:#ef4444; color:white; }
-    .pill { padding:6px 10px; border-radius:999px; background:#111827; border:1px solid #333; font-weight:700; }
+    .btn-danger:hover { background:#dc2626;}
+    .pill { padding:7px 13px; border-radius:999px; background:#181826; border:1px solid #333; font-weight:700; font-size:1rem;}
     .muted { color:#9ca3af; }
-    .hint { color:#94a3b8; font-size:0.95rem; }
-    .bank-dashboard { background:#181827; border-radius:12px; padding:18px; margin-bottom:16px; border:2px solid #4ade80; }
-    .bank-loan-row { display:flex; align-items:center; gap:14px; justify-content:space-between; background:#222; border-radius:10px; margin-bottom:8px; padding:10px; }
-    .bank-loan-row .loan-details { flex:1; }
-    .bank-loan-row .loan-actions { flex-shrink:0; }
-    #universal-modal { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:99999; display:none; align-items:center; justify-content:center; }
-    #universal-modal-content { background:#181818; color:white; border-radius:18px; padding:2rem; max-width:500px; width:96%; text-align:center; }
+    .hint { color:#94a3b8; font-size:1rem; }
+    #universal-modal { position:fixed; inset:0; background:rgba(0,0,0,0.83); z-index:99999; display:none; align-items:center; justify-content:center; }
+    #universal-modal-content { background:#23233a; color:white; border-radius:22px; padding:2.2rem; max-width:420px; width:95%; text-align:center; box-shadow:0 4px 20px #18183a88;}
     .bottom-nav { border-top: 1px solid #555; display: flex; justify-content: space-around; background: #121212; }
-    .bottom-nav button { flex-grow: 1; padding: 1rem 0; font-size: 1.1rem; color: #bbb; background: none; border: none; cursor: pointer; transition: background 0.3s;}
+    .bottom-nav button { flex-grow: 1; padding: 1rem 0; font-size: 1.15rem; color: #bbb; background: none; border: none; cursor: pointer; font-weight:600; transition: background 0.3s;}
     .bottom-nav button.active, .bottom-nav button:hover { background: #222; color: white; }
-    .mode-btn { transition: background 0.3s, color 0.3s; }
+    .mode-btn { transition: background 0.3s, color 0.3s; font-weight:800;}
     .mode-btn.active { background: #4ade80; color: black;}
-    .notification-item { background: #222; padding: 10px 15px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
-    .notification-text { font-weight: 600;}
+    .notification-item { background: #222; padding: 12px 16px; border-radius: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
+    .notification-text { font-weight: 650;}
     #settings-panel { display:none; position:fixed; right:12px; top:80px; width:320px; z-index:1400; }
     #scoreboard-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:2000; align-items:center; justify-content:center; }
+    /* loan admin list */
+    .loan-admin-list { background:#23233a; border-radius:13px; padding:14px; box-shadow:0 2px 8px #2228; margin-bottom:12px;}
+    .loan-admin-head { font-size:1.08rem; font-weight:700; margin-bottom:5px;}
+    .loan-admin-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+    .loan-admin-row .pill { font-size:0.97rem;}
+    /* bank loan user list */
+    .bank-loan-row { background:#23233a; border-radius:11px; padding:11px; margin-bottom:9px; box-shadow:0 2px 6px #2224;}
+    .bank-loan-name { font-weight:700;}
+    .bank-loan-balance { font-weight:700;}
+    .bank-loan-btn { padding:5px 13px; border-radius:8px; background:#4ade80; color:#18183a; font-weight:700; border:none; cursor:pointer; }
+    .bank-loan-btn:disabled { background:#9ca3af; color:#333; cursor:not-allowed;}
+    .bank-loan-log { font-size:0.95rem; color:#9ca3af;}
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -65,6 +75,7 @@
           <div class="text-sm muted">Balance</div>
           <div id="balance" class="text-2xl font-extrabold">৳ 0</div>
         </div>
+        <button onclick="openSettings()" class="px-3 py-2 rounded border border-gray-600">⚙️</button>
       </div>
     </header>
     <main class="flex-grow overflow-auto p-4">
@@ -213,7 +224,7 @@
             <button class="btn-small" onclick="openBankModal()">Bank</button>
             <button class="btn-small" onclick="openCompanyModal()">Create Company</button>
             <div id="portfolio-list" class="flex-col-scroll"></div>
-            <div id="bank-admin-dashboard" style="margin-top:18px;"></div>
+            <div id="bank-admin-loans"></div>
           </div>
           <div>
             <h3 class="text-xl font-bold mb-2">Transactions</h3>
@@ -249,7 +260,7 @@
     </nav>
   </div>
   <script>
-    // Firebase config: আপনারটি বসিয়ে নিন
+    // ---- Firebase config ----
     const firebaseConfig = {
       apiKey: "AIzaSyD8z3e5j9y48wJkyU89F7M19cDfxQ4P8uo",
       authDomain: "chess-online-ebc1f.firebaseapp.com",
@@ -291,6 +302,8 @@
       loan: null
     };
 
+    let bankBalance = 10000000000; // 10B
+
     // ---- Firebase realtime sync ----
     function syncUserState() {
       if (user) firebase.database().ref('users/'+user.uid).set(state);
@@ -330,8 +343,8 @@
         loadMarkets();
         loadCompanies();
         loadActivities();
-        loadLoansForBank();
         startMarketSimulation();
+        loadBankLoans();
       });
     }
 
@@ -680,28 +693,6 @@
       {amount:100000,interest:7},
       {amount:250000,interest:10}
     ];
-    let bankBalance = 10000000000; // 10B
-
-    // --- Bank loan DB management ---
-    function saveLoanToBank(userId, loanObj) {
-      firebase.database().ref('loans/'+userId).set(loanObj);
-    }
-    function removeLoanFromBank(userId) {
-      firebase.database().ref('loans/'+userId).remove();
-    }
-
-    // --- Bank admin dashboard loans ---
-    let bankLoans = {};
-    function loadLoansForBank() {
-      firebase.database().ref('loans').on('value', snap=>{
-        bankLoans = {};
-        if(snap.exists()) snap.forEach(child=>{
-          bankLoans[child.key] = child.val();
-        });
-        renderBankAdminDashboard();
-      });
-    }
-
     function openBankModal() {
       if (state.loan && !state.loan.repaid) {
         showModal(`<b>You already have a loan.</b><br>
@@ -745,7 +736,7 @@
       state.balance += plan.amount;
       bankBalance -= plan.amount;
       syncUserState();
-      saveLoanToBank(user.uid, {...state.loan, userId:user.uid, username:state.username, email:user.email});
+      saveBankLoan({uid:user.uid, name:state.username, amount:plan.amount, interest:plan.interest, takenAt:Date.now(), repaid:false});
       pushActivity(`${state.username} took loan of ${formatMoney(plan.amount)} at ${plan.interest}%`);
       hideModal();
       refreshUIAll();
@@ -759,8 +750,8 @@
       state.balance -= repayAmount;
       state.loan.repaid = true;
       bankBalance += repayAmount;
-      removeLoanFromBank(user.uid);
       syncUserState();
+      updateBankLoanRepayment(user.uid, repayAmount);
       pushActivity(`${state.username} repaid loan of ${formatMoney(repayAmount)}`);
       hideModal();
       refreshUIAll();
@@ -792,63 +783,73 @@
       loanPlans.splice(i,1); hideModal(); openBankModal();
     }
 
-    // ---- Bank Admin Dashboard ----
-    function renderBankAdminDashboard() {
-      const container = document.getElementById('bank-admin-dashboard');
-      if (!container) return;
-      if (!isAdmin) { container.innerHTML = ""; return; }
-      let html = `<div class="bank-dashboard">
-        <h3 style="font-size:1.2rem;font-weight:800;margin-bottom:10px;">Bank Loan Dashboard</h3>
-        <div style="margin-bottom:8px;font-size:1.02rem;">Bank Balance: <b>${formatMoney(bankBalance)}</b></div>
-        <div>`;
-      const now = new Date();
-      let count = 0;
-      for(const uid in bankLoans) {
-        const loan = bankLoans[uid];
-        let date = loan.takenAt ? (new Date(loan.takenAt)).toLocaleDateString() : "-";
-        let repayAmount = Math.ceil(loan.amount*(1+loan.interest/100));
-        html += `<div class="bank-loan-row">
-          <div class="loan-details">
-            <b>${loan.username}</b> (${loan.email})<br>
-            Loan: <span class="pill">${formatMoney(loan.amount)}</span> at <span class="pill">${loan.interest}%</span>
-            <br>Date: ${date}
-            <br>Repay due: <span class="pill">${formatMoney(repayAmount)}</span>
-            <br>Current Balance: <span id="bank-loan-bal-${uid}">Loading...</span>
-          </div>
-          <div class="loan-actions">
-            <button class="btn-small" onclick="forceRepayLoan('${uid}',${repayAmount})">Force Repay</button>
-          </div>
-        </div>`;
-        count++;
-      }
-      if(count==0) html += '<div class="hint">No active loans.</div>';
-      html += `</div></div>`;
-      container.innerHTML = html;
-      // Load all loan users' balance
-      for(const uid in bankLoans) {
-        firebase.database().ref('users/'+uid+'/balance').once('value').then(snap=>{
-          document.getElementById('bank-loan-bal-'+uid).innerText = formatMoney(snap.val()||0);
-        });
-      }
+    // ---- Bank loan user management ----
+    function saveBankLoan(loan) {
+      firebase.database().ref('bankLoans/'+loan.uid).set(loan);
     }
-
-    // ---- Admin force repay ----
-    function forceRepayLoan(uid, repayAmount) {
-      // Check user balance
-      firebase.database().ref('users/'+uid).once('value').then(snap=>{
-        if(!snap.exists()) { showModal("User not found."); return; }
-        const ustate = snap.val();
-        if((ustate.balance||0) < repayAmount) {
-          showModal("User doesn't have enough balance to force repay."); return;
+    function updateBankLoanRepayment(uid, repayAmount) {
+      firebase.database().ref('bankLoans/'+uid).once('value', snap=>{
+        if(snap.exists()) {
+          let loan = snap.val();
+          loan.repaid = true;
+          loan.repayAmount = repayAmount;
+          loan.repaidAt = Date.now();
+          firebase.database().ref('bankLoans/'+uid).set(loan);
         }
-        ustate.balance -= repayAmount;
-        if(ustate.loan) ustate.loan.repaid = true;
-        firebase.database().ref('users/'+uid).set(ustate);
-        removeLoanFromBank(uid);
-        bankBalance += repayAmount;
-        pushActivity(`Bank forced ${ustate.username} to repay loan of ${formatMoney(repayAmount)}`);
-        showModal("Loan forcibly repaid!");
-        renderBankAdminDashboard();
+      });
+    }
+    function loadBankLoans() {
+      if (!isAdmin) { document.getElementById('bank-admin-loans').innerHTML = ''; return; }
+      firebase.database().ref('bankLoans').on('value', snap=>{
+        if(snap.exists()) {
+          let html = `<div class="loan-admin-list"><div class="loan-admin-head">Bank Loan History</div>`;
+          snap.forEach(child=>{
+            let loan = child.val();
+            let repayTotal = Math.ceil(loan.amount*(1+loan.interest/100));
+            html += `<div class="loan-admin-row">
+              <span>
+                <span class="bank-loan-name">${loan.name}</span>
+                <span class="small-muted">(${new Date(loan.takenAt).toLocaleDateString()})</span>
+                <span class="pill">${formatMoney(loan.amount)}</span> @ <span class="pill">${loan.interest}%</span>
+              </span>
+              <span class="bank-loan-balance">Balance: <b id="bank-user-bal-${loan.uid}">—</b></span>
+              <button class="bank-loan-btn" onclick="adminCollectLoan('${loan.uid}',${repayTotal})" ${loan.repaid?'disabled':''}>
+                ${loan.repaid ? "Collected" : "Collect"}
+              </button>
+            </div>
+            <div class="bank-loan-log">${loan.repaid ? "Repaid: "+formatMoney(loan.repayAmount)+" on "+(loan.repaidAt?new Date(loan.repaidAt).toLocaleDateString():"") : ""}</div>`;
+            setTimeout(()=>updateBankUserBalance(loan.uid),300);
+          });
+          html += `</div>`;
+          document.getElementById('bank-admin-loans').innerHTML = html;
+        } else {
+          document.getElementById('bank-admin-loans').innerHTML = '<div class="loan-admin-list">No loan records found.</div>';
+        }
+      });
+    }
+    function updateBankUserBalance(uid) {
+      firebase.database().ref('users/'+uid+'/balance').once('value', snap=>{
+        if(snap.exists()) {
+          document.getElementById('bank-user-bal-'+uid).innerText = formatMoney(snap.val());
+        }
+      });
+    }
+    function adminCollectLoan(uid, repayTotal) {
+      firebase.database().ref('users/'+uid).once('value', snap=>{
+        if(snap.exists()) {
+          let userState = snap.val();
+          if (userState.balance >= repayTotal) {
+            userState.balance -= repayTotal;
+            firebase.database().ref('users/'+uid).set(userState);
+            bankBalance += repayTotal;
+            updateBankLoanRepayment(uid, repayTotal);
+            pushActivity(`Bank forcibly collected loan of ${formatMoney(repayTotal)} from ${userState.username}`);
+            showModal('Collection successful!<br><button onclick="hideModal()">OK</button>');
+            loadBankLoans();
+          } else {
+            showModal('User does not have enough balance.<br><button onclick="hideModal()">OK</button>');
+          }
+        }
       });
     }
 
@@ -898,8 +899,7 @@
       document.getElementById('balance').innerText = formatMoney(state.balance);
       document.getElementById('header-balance').innerText = formatMoney(state.balance);
       document.getElementById('header-balance-coin').innerText = formatMoney(state.balance);
-      const holdingsValue = calcHoldingsValue();
-      document.getElementById('networth').innerText = formatMoney(state.balance+holdingsValue);
+      document.getElementById('networth').innerText = formatMoney(state.balance+calcHoldingsValue());
       const totalPL = calcTotalPL();
       const tplEl = document.getElementById('total-pl');
       tplEl.innerText = formatMoney(totalPL);
@@ -959,7 +959,7 @@
           txEl.appendChild(el);
         });
       }
-      renderBankAdminDashboard();
+      if (isAdmin) loadBankLoans();
       refreshChartsIfSelected();
       updateLastUpdateLabels();
     }
@@ -974,4 +974,4 @@
     window.onload = function() { showScreen('home'); };
   </script>
 </body>
-                  </html>
+</html>
