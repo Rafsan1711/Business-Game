@@ -29,27 +29,36 @@
     .pill { padding:6px 10px; border-radius:999px; background:#111827; border:1px solid #333; font-weight:700; }
     .muted { color:#9ca3af; }
     .hint { color:#94a3b8; font-size:0.95rem; }
+    /* Universal modal */
     #universal-modal { position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:99999; display:none; align-items:center; justify-content:center; }
     #universal-modal-content { background:#181818; color:white; border-radius:18px; padding:2rem; max-width:400px; width:90%; text-align:center; }
+    /* Bottom nav */
     .bottom-nav { border-top: 1px solid #555; display: flex; justify-content: space-around; background: #121212; }
     .bottom-nav button { flex-grow: 1; padding: 1rem 0; font-size: 1.1rem; color: #bbb; background: none; border: none; cursor: pointer; transition: background 0.3s;}
     .bottom-nav button.active, .bottom-nav button:hover { background: #222; color: white; }
+    /* Mode nav */
     .mode-btn { transition: background 0.3s, color 0.3s; }
     .mode-btn.active { background: #4ade80; color: black;}
+    /* Notification */
     .notification-item { background: #222; padding: 10px 15px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
     .notification-text { font-weight: 600;}
+    /* Settings panel */
     #settings-panel { display:none; position:fixed; right:12px; top:80px; width:320px; z-index:1400; }
+    /* Scoreboard */
     #scoreboard-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:2000; align-items:center; justify-content:center; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
+  <!-- Universal Modal -->
   <div id="universal-modal"><div id="universal-modal-content"></div></div>
+  <!-- Auth Screen -->
   <div id="auth-screen" style="position:fixed; inset:0; background:#181818; z-index:100000; display:flex; align-items:center; justify-content:center;">
     <div style="padding:2rem; border-radius:18px; background:#222; color:white; text-align:center;">
       <h2 style="font-size:2rem;">Sign in</h2>
       <button onclick="googleSignIn()" class="btn-small" style="font-size:1.2rem;">Google Sign-In</button>
     </div>
   </div>
+  <!-- Main App -->
   <div id="app" class="flex-grow flex flex-col" style="display:none;">
     <header class="flex justify-between items-center p-4 border-b border-gray-700 relative">
       <div>
@@ -61,7 +70,7 @@
           <div class="text-sm muted">Balance</div>
           <div id="balance" class="text-2xl font-extrabold">৳ 0</div>
         </div>
-        <!-- Balance setter, removed as per request -->
+        <button onclick="openSettings()" class="px-3 py-2 rounded border border-gray-600">⚙️</button>
       </div>
     </header>
     <main class="flex-grow overflow-auto p-4">
@@ -71,6 +80,7 @@
         <button id="nav-crypto" onclick="showScreen('crypto')" class="mode-btn px-4 py-2 rounded border border-gray-700">Crypto</button>
         <button id="nav-portfolio" onclick="showScreen('portfolio')" class="mode-btn px-4 py-2 rounded border border-gray-700">Portfolio</button>
       </div>
+      <!-- Home Screen -->
       <section id="screen-home">
         <div class="max-w-4xl mx-auto">
           <h2 class="text-3xl font-bold mb-4">Home</h2>
@@ -110,6 +120,7 @@
           </div>
         </div>
       </section>
+      <!-- Stocks Screen -->
       <section id="screen-stocks" class="hidden max-w-4xl mx-auto">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-3xl font-bold">Stock Market</h2>
@@ -156,6 +167,7 @@
           </div>
         </div>
       </section>
+      <!-- Crypto Screen -->
       <section id="screen-crypto" class="hidden max-w-4xl mx-auto">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-3xl font-bold">Crypto Market</h2>
@@ -202,6 +214,7 @@
           </div>
         </div>
       </section>
+      <!-- Portfolio Screen -->
       <section id="screen-portfolio" class="hidden max-w-4xl mx-auto">
         <h2 class="text-3xl font-bold mb-4">Portfolio</h2>
         <div class="grid md:grid-cols-2 gap-4">
@@ -217,11 +230,21 @@
           </div>
         </div>
       </section>
+      <!-- Settings Modal -->
       <div id="settings-panel">
         <div class="bg-gray-900 border border-gray-700 rounded-lg p-4">
           <div class="flex justify-between items-center mb-3">
             <div class="text-lg font-bold">Settings</div>
             <button onclick="closeSettings()" class="px-2 py-1 rounded border">✖</button>
+          </div>
+          <div class="mb-3">
+            <label class="small-muted">Starting Balance</label>
+            <input id="setting-start-balance" type="number" min="0" value="100000" class="px-3 py-2 rounded bg-gray-900 border border-gray-700 w-full" />
+            <div class="hint mt-1">Change and press Apply to reset game with new starting balance.</div>
+            <div class="mt-2 flex gap-2">
+              <button class="btn-small" onclick="applySettings()">Apply</button>
+              <button class="btn-small btn-danger" onclick="resetGame()">Reset Game</button>
+            </div>
           </div>
           <div class="mb-3">
             <label class="small-muted">Simulation Speed</label>
@@ -245,38 +268,38 @@
     </nav>
   </div>
   <script>
-    // Firebase config: আপনারটি বসিয়ে নিন
+    // -------- Firebase config --------
     const firebaseConfig = {
-      apiKey: "AIzaSyD8z3e5j9y48wJkyU89F7M19cDfxQ4P8uo",
-      authDomain: "chess-online-ebc1f.firebaseapp.com",
-      databaseURL: "https://chess-online-ebc1f-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "chess-online-ebc1f",
-      storageBucket: "chess-online-ebc1f.appspot.com",
-      messagingSenderId: "825068912703",
-      appId: "1:825068912703:web:48330509c612b8b4cdf88a"
+      // ==== আপনার Firebase config এখানে দিন ====
+      apiKey: "",
+      authDomain: "",
+      databaseURL: "",
+      projectId: "",
+      storageBucket: "",
+      messagingSenderId: "",
+      appId: ""
     };
     firebase.initializeApp(firebaseConfig);
 
+    // -------- Universal Modal --------
     function showModal(content, onClose) {
       const modal = document.getElementById('universal-modal');
       const modalContent = document.getElementById('universal-modal-content');
       modalContent.innerHTML = content;
       modal.style.display = 'flex';
-      modal.onclick = (e) => { if (e.target === modal) { modal.style.display = 'none'; if(onClose) onClose(); } };
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+          if(onClose) onClose();
+        }
+      };
     }
     function hideModal() {document.getElementById('universal-modal').style.display='none';}
 
-    function formatMoney(n) {
-      n = Number(n || 0);
-      if (n >= 1e9) return '৳ ' + (n/1e9).toFixed(2) + 'B';
-      if (n >= 1e6) return '৳ ' + (n/1e6).toFixed(2) + 'M';
-      if (n >= 1e3) return '৳ ' + (n/1e3).toFixed(2) + 'K';
-      return '৳ ' + n.toLocaleString(undefined, {maximumFractionDigits:2});
-    }
-
+    // -------- Auth --------
     let user = null, isAdmin = false;
     let state = {
-      balance: 100000,
+      balance: 100000.00,
       holdings: {},
       transactions: [],
       activities: [],
@@ -286,22 +309,6 @@
       userCompany: null,
       loan: null
     };
-
-    // ---- Firebase realtime sync ----
-    function syncUserState() {
-      if (user) firebase.database().ref('users/'+user.uid).set(state);
-    }
-    function loadUserState() {
-      firebase.database().ref('users/'+user.uid).on('value', snap=>{
-        if(snap.exists()) { state = {...state, ...snap.val()}; refreshUIAll(); }
-      });
-    }
-    function pushActivity(text) {
-      const entry = {time: nowISO(), user: state.username, text};
-      firebase.database().ref('activities').push(entry);
-    }
-
-    // ---- Auth ----
     function googleSignIn() {
       const provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider).then(result=>{
@@ -311,27 +318,33 @@
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app').style.display = '';
         document.getElementById('display-username').innerText = state.username;
-        // Load/create user state
-        firebase.database().ref('users/'+user.uid).once('value').then(snap=>{
-          if(!snap.exists()) {
-            state.balance = 100000;
-            state.holdings = {};
-            state.transactions = [];
-            state.activities = [];
-            state.userCompany = null;
-            state.loan = null;
-            syncUserState();
-          }
-          loadUserState();
-        });
-        loadMarkets();
-        loadCompanies();
-        loadActivities();
-        startMarketSimulation();
+        loadFirebaseState();
       });
     }
+    function loadFirebaseState() {
+      firebase.database().ref('users/'+user.uid).once('value').then(snap=>{
+        if(snap.exists()) { state = {...state, ...snap.val()}; }
+        seedMarkets();
+        startMarketSimulation();
+        refreshUIAll();
+      });
+      firebase.database().ref('companies').on('value', snap=>{
+        if(snap.exists()){
+          snap.forEach(c=>{
+            const d = c.val();
+            state.markets.stocks[d.symbol] = {
+              symbol:d.symbol, name:d.name,
+              history:d.history || [{t:Date.now(),price:d.price}],
+              current:d.price
+            };
+          });
+          refreshUIAll();
+        }
+      });
+    }
+    function saveFirebaseState() { if(user) firebase.database().ref('users/'+user.uid).set(state); }
 
-    // ---- Market ----
+    // -------- Market Seed --------
     const FAKE_COMPANIES = [
       {symbol:'TNVA', name:'TechNova Ltd', base: 120.00},
       {symbol:'SKYO', name:'SkyOil Ltd', base: 86.50},
@@ -349,67 +362,34 @@
       {symbol:'SOLR', name:'Solara', base: 45.50},
       {symbol:'MINT', name:'MintCoin', base: 0.12}
     ];
-
-    function loadMarkets() {
-      // seed fake companies/coins in DB if not present
-      firebase.database().ref('markets/stocks').once('value', snap=>{
-        if(!snap.exists()) {
-          let stocks = {};
-          FAKE_COMPANIES.forEach(c=>{
-            stocks[c.symbol] = {symbol:c.symbol, name:c.name, current:c.base, history:[{t:Date.now(),price:c.base}]};
-          });
-          firebase.database().ref('markets/stocks').set(stocks);
+    function seedMarkets() {
+      const now = Date.now();
+      FAKE_COMPANIES.forEach(c => {
+        if (!state.markets.stocks[c.symbol]) {
+          const hist = [];
+          let p = c.base;
+          for (let i=0;i<30;i++){
+            p = +(p * (1 + (Math.random()-0.48)*0.03)).toFixed(4);
+            hist.push({t: now - (30-i)*60000, price: p});
+          }
+          state.markets.stocks[c.symbol] = {symbol:c.symbol, name:c.name, history: hist, current: hist[hist.length-1].price};
         }
       });
-      firebase.database().ref('markets/coins').once('value', snap=>{
-        if(!snap.exists()) {
-          let coins = {};
-          FAKE_COINS.forEach(c=>{
-            coins[c.symbol] = {symbol:c.symbol, name:c.name, current:c.base, history:[{t:Date.now(),price:c.base}]};
-          });
-          firebase.database().ref('markets/coins').set(coins);
+      FAKE_COINS.forEach(c => {
+        if (!state.markets.coins[c.symbol]) {
+          const hist = [];
+          let p = c.base;
+          for (let i=0;i<30;i++){
+            p = +(p * (1 + (Math.random()-0.48)*0.06)).toFixed(8);
+            hist.push({t: now - (30-i)*60000, price: p});
+          }
+          state.markets.coins[c.symbol] = {symbol:c.symbol, name:c.name, history: hist, current: hist[hist.length-1].price};
         }
       });
-      // realtime update
-      firebase.database().ref('markets').on('value', snap=>{
-        if(snap.exists()) {
-          state.markets.stocks = snap.val().stocks || {};
-          state.markets.coins = snap.val().coins || {};
-          refreshUIAll();
-        }
-      });
+      saveFirebaseState();
     }
 
-    function loadCompanies() {
-      firebase.database().ref('companies').on('value', snap=>{
-        if(snap.exists()) {
-          const companies = snap.val();
-          Object.values(companies).forEach(c=>{
-            state.markets.stocks[c.symbol] = {
-              symbol: c.symbol,
-              name: c.name,
-              current: c.price,
-              history: c.history || [{t:Date.now(),price:c.price}]
-            };
-          });
-          refreshUIAll();
-        }
-      });
-    }
-
-    // ---- Activities ----
-    function loadActivities() {
-      firebase.database().ref('activities').on('value', snap=>{
-        if(snap.exists()) {
-          let acts = [];
-          snap.forEach(child=>{ acts.unshift(child.val()); });
-          state.activities = acts;
-          refreshUIAll();
-        }
-      });
-    }
-
-    // ---- Price simulation ----
+    // -------- Price simulation --------
     let marketInterval = null;
     function startMarketSimulation() {
       stopMarketSimulation();
@@ -429,7 +409,9 @@
         m.history.push({t: now, price: next});
         m.current = next;
         if (m.history.length > 200) m.history.shift();
-        firebase.database().ref('markets/stocks/'+m.symbol).set(m);
+        if(state.userCompany && m.symbol===state.userCompany.symbol && user && user.uid===state.userCompany.owner)
+          firebase.database().ref('companies/'+state.userCompany.symbol+'/price').set(next);
+        firebase.database().ref('companies/'+m.symbol+'/history').set(m.history);
       });
       Object.values(state.markets.coins).forEach(m => {
         const last = m.history[m.history.length-1].price;
@@ -439,20 +421,23 @@
         m.history.push({t: now, price: next});
         m.current = next;
         if (m.history.length > 200) m.history.shift();
-        firebase.database().ref('markets/coins/'+m.symbol).set(m);
       });
-      updateLastUpdateLabels();
+      state.activities.unshift({time: nowISO(), type:'market-update', text: 'Market prices updated'});
+      if (state.activities.length > 200) state.activities.pop();
+      saveFirebaseState();
+      refreshUIAll();
     }
     function randNormal() { let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random(); return Math.sqrt(-2.0*Math.log(u))*Math.cos(2.0*Math.PI*v);}
     function roundTo(n, digits) {const m = Math.pow(10, digits||2); return Math.round(n*m)/m;}
     function nowISO() { return (new Date()).toLocaleString(); }
+    const formatMoney = (v) => {const n=Number(v||0); return '৳ '+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
     function updateLastUpdateLabels() {
       const t = new Date().toLocaleTimeString();
       document.getElementById('stocks-last-update').innerText = t;
       document.getElementById('crypto-last-update').innerText = t;
     }
 
-    // ---- UI ----
+    // -------- UI/Screen --------
     function showScreen(name) {
       const screens = ['home','stocks','crypto','portfolio'];
       screens.forEach(s => {document.getElementById('screen-'+s).classList.toggle('hidden',s!==name);});
@@ -466,7 +451,7 @@
     function openSettings(){document.getElementById('settings-panel').style.display='block';}
     function closeSettings(){document.getElementById('settings-panel').style.display='none';}
 
-    // ---- Market UI ----
+    // -------- Market UI --------
     let selectedStockSymbol = null, marketChart = null;
     let selectedCoinSymbol = null, coinChart = null;
     function buildCompaniesList() {
@@ -574,7 +559,7 @@
       }
     }
 
-    // ---- Buy/Sell/Portfolio ----
+    // -------- Buy/Sell/Portfolio --------
     function buySelected() {
       if(!selectedStockSymbol){showModal('কোনো কোম্পানি সিলেক্ট করা হয়নি<br><button onclick="hideModal()">OK</button>');return;}
       const qty = Math.floor(Number(document.getElementById('buy-qty').value||0));
@@ -592,9 +577,8 @@
         h.qty = newQty; h.avgPrice = roundTo(newAvg,4);
       }
       state.transactions.unshift({time:nowISO(),type:'buy',market:'stock',symbol:m.symbol,name:m.name,qty,price:m.current,total});
-      syncUserState();
-      pushActivity(`${state.username} bought ${qty} ${m.symbol} for ${formatMoney(total)}`);
-      refreshUIAll();
+      state.activities.unshift({time:nowISO(),type:'buy',text:`Bought ${qty} ${m.symbol} @ ${formatMoney(m.current)} (total ${formatMoney(total)})`});
+      saveFirebaseState(); refreshUIAll();
       showModal('Successfully bought!<br><button onclick="hideModal()">OK</button>');
     }
     function buySelectedCoin() {
@@ -614,9 +598,8 @@
         h.qty = newQty; h.avgPrice = roundTo(newAvg,8);
       }
       state.transactions.unshift({time:nowISO(),type:'buy',market:'coin',symbol:m.symbol,name:m.name,qty,price:m.current,total});
-      syncUserState();
-      pushActivity(`${state.username} bought ${qty} ${m.symbol} for ${formatMoney(total)}`);
-      refreshUIAll();
+      state.activities.unshift({time:nowISO(),type:'buy',text:`Bought ${qty} ${m.symbol} @ ${formatMoney(m.current)} (total ${formatMoney(total)})`});
+      saveFirebaseState(); refreshUIAll();
       showModal('Successfully bought!<br><button onclick="hideModal()">OK</button>');
     }
     function sellHolding(key) {
@@ -637,13 +620,12 @@
       h.qty = roundTo(h.qty-qty,8); if(h.qty<=0.00000001)delete state.holdings[key];
       state.balance = roundTo(state.balance+total,2);
       state.transactions.unshift({time:nowISO(),type:'sell',market:h.type,symbol:h.symbol,name:h.name,qty,price:m.current,total});
-      syncUserState();
-      pushActivity(`${state.username} sold ${qty} ${h.symbol} for ${formatMoney(total)}`);
-      refreshUIAll();hideModal();
+      state.activities.unshift({time:nowISO(),type:'sell',text:`Sold ${qty} ${h.symbol} @ ${formatMoney(m.current)} (got ${formatMoney(total)})`});
+      saveFirebaseState();refreshUIAll();hideModal();
       showModal('Sold successfully!<br><button onclick="hideModal()">OK</button>');
     }
 
-    // ---- Portfolio ----
+    // -------- Portfolio --------
     function selectFromPortfolio(key) {
       const h = state.holdings[key];
       if (!h) return;
@@ -672,21 +654,19 @@
       return roundTo(sum,2);
     }
 
-    // ---- Loan System ----
+    // -------- Loan System --------
     let loanPlans = [
       {amount:50000,interest:5},
       {amount:100000,interest:7},
       {amount:250000,interest:10}
     ];
-    let bankBalance = 10000000000; // 10B
     function openBankModal() {
       if (state.loan && !state.loan.repaid) {
         showModal(`<b>You already have a loan.</b><br>
           Amount: ${formatMoney(state.loan.amount)}<br>
           Interest: ${state.loan.interest}%<br>
           <button onclick="repayLoan()" class="btn-small">Repay</button>
-          <button onclick="hideModal()">Close</button>
-          <br><div class="hint">Bank Balance: ${formatMoney(bankBalance)}</div>`);
+          <button onclick="hideModal()">Close</button>`);
         return;
       }
       let plansHtml = loanPlans.map((plan,i)=>`
@@ -701,9 +681,7 @@
           <button onclick="addLoanPlanModal()" class="btn-small">Add Plan</button>
           <button onclick="editLoanPlansModal()" class="btn-small">Edit</button>`;
       }
-      showModal(`<b>Bank Loans</b><br>${plansHtml}${adminHtml}
-        <div class="hint">Bank Balance: ${formatMoney(bankBalance)}</div>
-        <button onclick="hideModal()">Close</button>`);
+      showModal(`<b>Bank Loans</b><br>${plansHtml}${adminHtml}<button onclick="hideModal()">Close</button>`);
     }
     function confirmLoan(idx) {
       const plan = loanPlans[idx];
@@ -715,14 +693,10 @@
     }
     function takeLoan(idx) {
       const plan = loanPlans[idx];
-      if (bankBalance < plan.amount) {
-        showModal("Bank doesn't have enough money!<br><button onclick='hideModal()'>OK</button>"); return;
-      }
       state.loan = {...plan, takenAt: Date.now(), owner: state.username, repaid: false};
       state.balance += plan.amount;
-      bankBalance -= plan.amount;
-      syncUserState();
-      pushActivity(`${state.username} took loan of ${formatMoney(plan.amount)} at ${plan.interest}%`);
+      state.activities.unshift({time: nowISO(), type:'loan', text: `Took loan ${formatMoney(plan.amount)} at ${plan.interest}% interest`});
+      saveFirebaseState();
       hideModal();
       refreshUIAll();
     }
@@ -734,9 +708,8 @@
       }
       state.balance -= repayAmount;
       state.loan.repaid = true;
-      bankBalance += repayAmount;
-      syncUserState();
-      pushActivity(`${state.username} repaid loan of ${formatMoney(repayAmount)}`);
+      state.activities.unshift({time: nowISO(), type:'repay', text: `Loan repaid (${formatMoney(repayAmount)})`});
+      saveFirebaseState();
       hideModal();
       refreshUIAll();
     }
@@ -767,7 +740,7 @@
       loanPlans.splice(i,1); hideModal(); openBankModal();
     }
 
-    // ---- Company Creation ----
+    // -------- Company Creation --------
     function openCompanyModal() {
       if(state.balance < 1000000) {
         showModal('Not enough balance to create company.<br><button onclick="hideModal()">OK</button>'); return;
@@ -790,34 +763,25 @@
         shares: 100,
         symbol: "USR"+user.uid.substring(0,7).toUpperCase()
       };
-      // Add company to Firebase companies
       firebase.database().ref('companies/'+state.userCompany.symbol).set({
         ...state.userCompany, price: 120, history: [{t:Date.now(),price:120}]
       });
-      // Add company to stocks list in markets
-      firebase.database().ref('markets/stocks/'+state.userCompany.symbol).set({
-        symbol: state.userCompany.symbol,
-        name: state.userCompany.name,
-        current: 120,
-        history: [{t:Date.now(),price:120}]
-      });
-      // First 100 shares to owner portfolio
       state.holdings['stock_'+state.userCompany.symbol] = {
         type:'stock', symbol:state.userCompany.symbol, name:state.userCompany.name, qty:100, avgPrice:120
       };
-      syncUserState();
-      pushActivity(`${state.username} created company ${state.userCompany.name}`);
+      saveFirebaseState();
       hideModal();
       refreshUIAll();
     }
 
-    // ---- UI Refresh ----
+    // -------- UI Refresh --------
     function refreshUIAll() {
       document.getElementById('balance').innerText = formatMoney(state.balance);
       document.getElementById('header-balance').innerText = formatMoney(state.balance);
       document.getElementById('header-balance-coin').innerText = formatMoney(state.balance);
       const holdingsValue = calcHoldingsValue();
-      document.getElementById('networth').innerText = formatMoney(state.balance+holdingsValue);
+      const networth = roundTo(state.balance+holdingsValue,2);
+      document.getElementById('networth').innerText = formatMoney(networth);
       const totalPL = calcTotalPL();
       const tplEl = document.getElementById('total-pl');
       tplEl.innerText = formatMoney(totalPL);
@@ -881,14 +845,37 @@
       updateLastUpdateLabels();
     }
 
-    // ---- Settings ----
+    // -------- Settings --------
     function applySettings() {
+      state.balance = Number(document.getElementById('setting-start-balance').value)||100000;
       state.settings.updateInterval = Number(document.getElementById('setting-speed').value)||60000;
-      syncUserState();closeSettings();
+      saveFirebaseState();refreshUIAll();closeSettings();
       startMarketSimulation();
     }
+    function resetGame() {
+      if(confirm("Are you sure to reset everything?")) {
+        state = {
+          balance: 100000.00,
+          holdings: {},
+          transactions: [],
+          activities: [],
+          markets: { stocks: {}, coins: {} },
+          settings: { updateInterval: 60000 },
+          username: state.username,
+          userCompany: null,
+          loan: null
+        };
+        seedMarkets();
+        saveFirebaseState();
+        refreshUIAll();
+        closeSettings();
+      }
+    }
 
-    window.onload = function() { showScreen('home'); };
+    // -------- Boot --------
+    window.onload = function() {
+      showScreen('home');
+    };
   </script>
 </body>
-        </html>
+              </html>
